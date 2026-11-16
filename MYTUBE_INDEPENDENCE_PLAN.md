@@ -17,6 +17,27 @@ This plan does not claim that inherited Chromium, Cobalt, Starboard, or third-pa
 2. **Code-provenance independence:** TizenTube-specific code is replaced by independently authored MyTube implementations. Retained upstream code remains attributed and licensed correctly.
 3. **Engine independence:** A longer-term option to replace or substantially reduce reliance on the inherited Cobalt/Chromium engine. This is a major separate engineering programme; it is not achieved by renaming the fork.
 
+## Product compatibility contract — preserve the existing TizenTube experience
+
+The approved product direction is **MyTube = the existing YouTube TV experience, with MyTube branding and an ad-free experience**. Independence work must not turn into a player rewrite or a UI redesign.
+
+The following are preservation requirements:
+
+- Keep the existing YouTube TV interface, navigation, layout, and interaction model unchanged unless the owner explicitly requests a UI change.
+- Preserve the existing TizenTube playback behaviour and capabilities: the current video pipeline, stream/format handling, buffering behaviour, playback controls, seek behaviour, playback speed, captions/subtitles, and every resolution/quality option that currently works on the supported device.
+- Preserve current automatic/manual quality selection and adaptive quality behaviour wherever already supported. Do not claim support for a resolution, codec, HDR mode, or feature that has not been verified on the target device.
+- Keep the existing SponsorBlock integration and sponsor-segment skipping, along with the existing ad-skipping behaviour, subject to applicable platform terms and law.
+- Treat the Cobalt/Chromium media stack and the existing YouTube TV web application as compatibility-critical. Do not replace, simplify, disable, or bulk-edit their media/player code as part of branding or backend independence work.
+- Make backend and platform changes behind the existing compatibility boundary. A change is acceptable only when it preserves the observable playback/UI behaviour or has an explicitly approved reason to change it.
+
+### Required regression gate before playback-related changes
+
+1. Record the current supported device/build and a working playback baseline before touching media code.
+2. Test playback start, pause/resume, seek, playback speed, captions, available quality levels, manual quality changes, adaptive quality, long playback/buffering, and audio/video stability.
+3. Verify SponsorBlock detection/skipping and existing ad-skipping behaviour separately from ordinary playback.
+4. Compare the same tests after each relevant change. If the environment cannot run the target build, mark the behaviour **not verified**; do not infer success from source inspection.
+5. Keep playback and UI code out of scope for a backend-only refactor unless a concrete dependency requires a change.
+
 ## Verified starting point
 
 The current branch contains a TizenTube-derived native integration in the Cobalt browser:
