@@ -1,0 +1,34 @@
+{
+  "docker_service": "linux",
+  "platforms": [
+    "android-arm"
+  ],
+  "build_runners": [
+    "self-hosted",
+    "chrobalt-linux-runner"
+  ],
+  "build_configs": [
+    "gold"
+  ],
+  "targets": [
+    "cobalt:gn_all"
+  ],
+  "includes": [
+    {
+      "name": "arm",
+      "platform": "android-arm"
+    }
+  ],
+  "test_root_target": "//cobalt/android:cobalt_apk",
+  "test_package": false,
+  "test_on_host": false,
+  "test_on_device": false,
+  "test_e2e": false,
+  "test_yts": false,
+  "test_yts_playback": false,
+  "test_browser": false,
+  "test_yts_wpt": false,
+  "test_yts_finch": false,
+  "web_tests": false,
+  "enable_sccache": false
+}
