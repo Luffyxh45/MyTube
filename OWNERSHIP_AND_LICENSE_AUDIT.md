@@ -1,8 +1,8 @@
 # MyTube Ownership & License Audit
 
-**Repository:** `Luffyxh45/MyTube`  
-**Branch audited:** `mytube-branding`  
-**Audited revision:** `21cb7394e83f75e2f49613ac511be339d2fbcab7` (2026-11-16)  
+**Repository:** `Luffyxh45/MyTube`
+**Branch audited:** `mytube-branding`
+**Audited revision:** `21cb7394e83f75e2f49613ac511be339d2fbcab7` (2026-11-16)
 **Status:** Initial repository-level audit — **not yet a complete file-by-file legal audit**.
 
 ## Important ownership conclusion
@@ -231,8 +231,8 @@ These are the known upstream identities found in the inherited funding/reviewer 
 
 ## Independence review — 2026-11-16
 
-**Reviewed branch revision:** `916894ee549fe08c27cd2e0f96bf73b76ac66f5d`  
-**Branch comparison:** `mytube-branding` is 22 commits ahead of `main`, 0 behind.  
+**Reviewed branch revision:** `916894ee549fe08c27cd2e0f96bf73b76ac66f5d`
+**Branch comparison:** `mytube-branding` is 22 commits ahead of `main`, 0 behind.
 **Scope:** targeted review of the TizenTube-derived native API and project-control metadata; this is not a full repository scan.
 
 ### New verified findings
@@ -439,7 +439,7 @@ No playback, SponsorBlock, ad-filtering, DeArrow, YouTube TV UI, or media-engine
 
 ## MyTube platform-service isolation — 2026-11-16
 
-**Branch:** `mytube-branding`  
+**Branch:** `mytube-branding`
 **Implementation commits:** `525f6e9`, `a7b7a6f`, `c92f563`, `d2e8fa2`
 
 A MyTube-owned platform service layer has been added:
