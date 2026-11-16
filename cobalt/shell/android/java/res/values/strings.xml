@@ -17,6 +17,7 @@
 -->
 
 <resources>
+    <string name="app_description">MyTube by Luffy</string>
     <string name="url_hint">Type URL Here</string>
     <string name="browser_process_initialization_failed">Initialization failed.</string>
     <!-- Error message when there's a problem connecting to the network. -->
