@@ -160,8 +160,8 @@ This section supersedes the earlier statements that the three TizenTube-named Gi
 
 | File | Verified change | Rights / caveat |
 |---|---|---|
-| `cobalt/android/BUILD.gn` | Android manifest package value changed from `io.gh.reisxd.tizentube.cobalt` to `com.luffy.mytube`. | The file's Cobalt copyright and Apache-2.0 header were preserved. Build/package validation is still required. |
-| `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` | Default Android application label changed from `TizenTube` to `MyTube`. | The Cobalt copyright and Apache-2.0 header were preserved. The YouTube TV app URL and splash-screen metadata were not changed. |
+| `cobalt/android/BUILD.gn` | The Cobalt Android **CoAT development-shell** manifest package value changed from `io.gh.reisxd.tizentube.cobalt` to `com.luffy.mytube`. | The file's Cobalt copyright and Apache-2.0 header were preserved. The manifest template says this shell manifest does **not** affect the production Kimono app; production package identity remains unverified. Build/package validation is still required. |
+| `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` | Default Android application label for the **CoAT development shell** changed from `TizenTube` to `MyTube`. | The Cobalt copyright and Apache-2.0 header were preserved. The template explicitly says it is not the production Kimono manifest. The YouTube TV app URL and splash-screen metadata were not changed. |
 | `.github/FUNDING.yml` | Removed. It directed GitHub Sponsors and Buy Me a Coffee funding to `reisxd`, not MyTube. | No MyTube funding destination was supplied, so no replacement funding account was invented. |
 | `.github/assets/TizenTube Cobalt Banner.png` | Removed. | The asset's provenance/permission was not established. |
 | `.github/assets/TizenTube Download Latest Release Button.png` | Removed. | The asset's provenance/permission was not established. |
@@ -190,6 +190,11 @@ The H5VCC module files carry **Copyright 2026 Reis Can (reisxd)** and an **Apach
 
 ### Current verified conclusion
 
-The app-facing Android package value and label now identify as MyTube, and the three stale TizenTube GitHub banner assets plus the unrelated upstream funding file have been removed. The Cobalt/Chromium engine, Starboard, and third-party libraries remain inherited licensed components. The TizenTube-derived H5VCC module remains in the build and must retain its Reis Can attribution and Apache-2.0 terms.
+The Cobalt Android CoAT development-shell manifest now identifies as MyTube, and the three stale TizenTube GitHub banner assets plus the unrelated upstream funding file have been removed. This does not prove that the production Kimono APK uses `com.luffy.mytube`; that production package configuration has not yet been located or verified. The Cobalt/Chromium engine, Starboard, and third-party libraries remain inherited licensed components. The TizenTube-derived H5VCC module remains in the build and must retain its Reis Can attribution and Apache-2.0 terms.
 
 **This is still not a completed file-by-file legal audit.** The recursive Git tree is truncated; the 303 third-party package directories, 28 third-party gitlinks, full source headers, binary assets, shipped dependency set, and generated release notices have not all been individually inspected. No supported Android build or release packaging test has been run after the package-ID change. Do not describe the whole repository as exclusively owned by MyTube or as fully licence-cleared until those checks pass.
+
+
+### Correction: Android package scope
+
+The Android manifest template `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` contains comments stating that it is used only for the development shell (CoAT) and does not affect the production Kimono app. Accordingly, the package-ID and label commits recorded above are verified changes to that development-shell build path only. They must not be represented as a verified production MyTube APK package change. The production app packaging path and its manifest/package identifier still need to be located and tested.
