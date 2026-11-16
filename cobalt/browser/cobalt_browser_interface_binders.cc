@@ -30,6 +30,8 @@
 #include "cobalt/browser/h5vcc_native_stability/h5vcc_native_stability_impl.h"
 #include "cobalt/browser/h5vcc_native_stability/public/mojom/h5vcc_native_stability.mojom.h"
 #include "cobalt/browser/mytube_platform_api/mytube_platform_api_impl.h"
+// Compatibility contract required by the existing YouTube TV web client.
+// MyTube owns the native implementation; keep this wire interface stable.
 #include "cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom.h"
 #include "cobalt/browser/h5vcc_runtime/h5vcc_runtime_impl.h"
 #include "cobalt/browser/h5vcc_runtime/public/mojom/h5vcc_runtime.mojom.h"
@@ -213,6 +215,7 @@ void PopulateCobaltFrameBinders(
   binder_map->Add<h5vcc_platform_service::mojom::H5vccPlatformServiceManager>(
       base::BindRepeating(&h5vcc_platform_service::
                               H5vccPlatformServiceManagerImpl::GetOrCreate));
+  // Preserve the existing web-facing contract while binding to MyTube code.
   binder_map->Add<h5vcc_tizentube::mojom::H5vccTizentube>(
       base::BindRepeating(&mytube::PlatformApiImpl::Create));
 }
