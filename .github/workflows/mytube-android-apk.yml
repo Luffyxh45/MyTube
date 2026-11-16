@@ -1,0 +1,130 @@
+name: MyTube Android TV APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - mytube-branding
+    paths:
+      - "cobalt/**"
+      - "starboard/**"
+      - ".github/workflows/mytube-android-apk.yml"
+      - "docs/BUILDING_MYTUBE_ANDROID.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mytube-android-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }} APK
+    runs-on: [self-hosted, linux, x64, mytube-android-builder]
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        platform: [android-arm, android-arm64]
+
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      BUILD_TYPE: gold
+      COBALT_GRADLE_BUILD_COUNT: "2"
+
+    steps:
+      - name: Check out MyTube source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: true
+
+      - name: Check builder capacity and prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Disk space:"
+          df -h .
+          free_gb=$(df -BG . | awk 'NR==2 {gsub(/G/, "", $4); print $4}')
+          if [ "${free_gb}" -lt 80 ]; then
+            echo "::error::At least 80 GB free disk space is required; 100 GB is recommended for Cobalt Android builds."
+            exit 1
+          fi
+          command -v python3
+          command -v java
+          java -version
+          command -v git
+          command -v make
+          command -v unzip
+          command -v zip
+
+      - name: Install depot_tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${DEPOT_TOOLS_DIR:-}" ] && [ -d "${DEPOT_TOOLS_DIR}" ]; then
+            tools_dir="${DEPOT_TOOLS_DIR}"
+          else
+            tools_dir="${RUNNER_TEMP}/depot_tools"
+            if [ ! -d "${tools_dir}/.git" ]; then
+              git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git "${tools_dir}"
+            else
+              git -C "${tools_dir}" pull --ff-only
+            fi
+          fi
+          echo "${tools_dir}" >> "${GITHUB_PATH}"
+          echo "DEPOT_TOOLS_DIR=${tools_dir}" >> "${GITHUB_ENV}"
+
+      - name: Verify GN and Ninja tooling
+        shell: bash
+        run: |
+          set -euo pipefail
+          "${DEPOT_TOOLS_DIR}/gn" --version
+          "${DEPOT_TOOLS_DIR}/autoninja" --version
+          python3 cobalt/build/gn.py --help >/dev/null
+
+      - name: Configure Android ${{ matrix.platform }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 cobalt/build/gn.py -p "${PLATFORM}" -c "${BUILD_TYPE}" --no-rbe
+
+      - name: Build CoAT installable APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          "${DEPOT_TOOLS_DIR}/autoninja" -C "out/${PLATFORM}_${BUILD_TYPE}" cobalt_install
+          test -s "out/${PLATFORM}_${BUILD_TYPE}/cobalt.apk"
+
+      - name: Verify APK and record checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="out/${PLATFORM}_${BUILD_TYPE}/cobalt.apk"
+          unzip -t "${apk}"
+          unzip -Z1 "${apk}" > apk-contents.txt
+          if [ "${PLATFORM}" = "android-arm" ]; then
+            grep -q '^lib/armeabi-v7a/' apk-contents.txt
+          else
+            grep -q '^lib/arm64-v8a/' apk-contents.txt
+          fi
+          if [ -x "${ANDROID_HOME:-}/build-tools/$(ls "${ANDROID_HOME:-/nonexistent}/build-tools" 2>/dev/null | sort -V | tail -1)/aapt" ]; then
+            "${ANDROID_HOME}/build-tools/$(ls "${ANDROID_HOME}/build-tools" | sort -V | tail -1)/aapt" dump badging "${apk}" | tee apk-badging.txt
+          else
+            echo "aapt not found; package metadata inspection deferred." | tee apk-badging.txt
+          fi
+          sha256sum "${apk}" | tee SHA256SUMS.txt
+          cp "${apk}" "MyTube-${PLATFORM}.apk"
+
+      - name: Upload APK build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyTube-${{ matrix.platform }}-APK
+          path: |
+            MyTube-${{ matrix.platform }}.apk
+            SHA256SUMS.txt
+            apk-badging.txt
+          if-no-files-found: error
+          retention-days: 30
