@@ -148,3 +148,48 @@ No full source-header scan, image metadata/provenance scan, binary asset review,
 7. Verify generated third-party notices in the final Android/TV release and run the supported build/test workflows.
 
 **No inherited copyright or licence notice has been changed as part of this supplemental audit.** This update does not certify the repository or any binary as exclusively owned by MyTube.
+
+
+## Follow-up pass — 2026-11-16
+
+**Branch revision after this pass:** `020f8e71c430f647dabd3a50830c0ba2026ea4aa`.
+
+This section supersedes the earlier statements that the three TizenTube-named GitHub assets and the old funding file were still present.
+
+### Verified MyTube identity changes committed
+
+| File | Verified change | Rights / caveat |
+|---|---|---|
+| `cobalt/android/BUILD.gn` | Android manifest package value changed from `io.gh.reisxd.tizentube.cobalt` to `com.luffy.mytube`. | The file's Cobalt copyright and Apache-2.0 header were preserved. Build/package validation is still required. |
+| `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` | Default Android application label changed from `TizenTube` to `MyTube`. | The Cobalt copyright and Apache-2.0 header were preserved. The YouTube TV app URL and splash-screen metadata were not changed. |
+| `.github/FUNDING.yml` | Removed. It directed GitHub Sponsors and Buy Me a Coffee funding to `reisxd`, not MyTube. | No MyTube funding destination was supplied, so no replacement funding account was invented. |
+| `.github/assets/TizenTube Cobalt Banner.png` | Removed. | The asset's provenance/permission was not established. |
+| `.github/assets/TizenTube Download Latest Release Button.png` | Removed. | The asset's provenance/permission was not established. |
+| `.github/assets/TizenTube_Cobalt-Official_Banner.png` | Removed. | The asset's provenance/permission was not established. |
+
+The three TizenTube-named image assets were not referenced by any of the 66 text/metadata files scanned under `.github/` or by the current root README. This is a bounded reference scan, not proof that no external GitHub metadata or unscanned file ever referenced them.
+
+### TizenTube-derived code that must not be falsely claimed
+
+The following files were inspected directly:
+
+- `cobalt/browser/h5vcc_tizentube/BUILD.gn`
+- `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.cc`
+- `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.h`
+- `cobalt/browser/h5vcc_tizentube/public/mojom/BUILD.gn`
+- `cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom`
+- `cobalt/browser/BUILD.gn`
+
+The H5VCC module files carry **Copyright 2026 Reis Can (reisxd)** and an **Apache License 2.0** header. The browser build explicitly depends on this module. It implements app installation from a URL, version/device information, frame-rate control, and user-agent override functionality. These files are therefore not safe to delete or relabel as MyTube-original without a compatibility and provenance review. Their original copyright headers must remain; the Apache licence must be supplied with distributions, and modifications must be marked as required by that licence.
+
+### Permission / repository administration clarification
+
+- `.github/OWNERS` contains two upstream reviewer email addresses. It is not GitHub's collaborator/admin permission list and does not itself grant those people repository write or admin access.
+- The repository connector available for this audit can check a named collaborator's permission, but it does not expose a complete collaborator list. Actual repository access should be reviewed in **GitHub → Settings → Collaborators and teams**. No collaborator permissions were changed in this pass.
+- `.github/workflows/autoroll_main.yaml` is inherited Cobalt automation. Its scheduled trigger is commented out; it is manually dispatchable and uses the `CHERRY_PICK_TOKEN` secret to push autoroll branches / create pull requests. It is not the MyTube Android app build. It was left unchanged pending a decision about whether upstream Cobalt autoroll maintenance is still wanted.
+
+### Current verified conclusion
+
+The app-facing Android package value and label now identify as MyTube, and the three stale TizenTube GitHub banner assets plus the unrelated upstream funding file have been removed. The Cobalt/Chromium engine, Starboard, and third-party libraries remain inherited licensed components. The TizenTube-derived H5VCC module remains in the build and must retain its Reis Can attribution and Apache-2.0 terms.
+
+**This is still not a completed file-by-file legal audit.** The recursive Git tree is truncated; the 303 third-party package directories, 28 third-party gitlinks, full source headers, binary assets, shipped dependency set, and generated release notices have not all been individually inspected. No supported Android build or release packaging test has been run after the package-ID change. Do not describe the whole repository as exclusively owned by MyTube or as fully licence-cleared until those checks pass.
