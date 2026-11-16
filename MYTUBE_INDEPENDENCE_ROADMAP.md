@@ -107,3 +107,7 @@ The legacy native implementation cleanup and follow-up Android source correction
 - Verified that the shared shell Android resources provide the FileProvider XML path used by the installer and that the AndroidX Core dependency is present in the Java target.
 
 **Still unverified:** the full Android/Cobalt target has not been generated or compiled, and no APK or TV-device test has been run. These source checks are not a substitute for CI/build/runtime evidence. The Mojo interface cannot be renamed safely until the external YouTube TV web client contract is traced. The complete third-party inventory and release signing pipeline remain open.
+
+## Android branding update — 2026-11-16
+
+The shell manifest now points to MyTube-owned vector launcher resources instead of the inherited Cobalt icon and TizenTube-branded Android TV banner. The five old density-specific TizenTube banner PNGs were removed and the new XML resources were added to the Cobalt shell Android resource target. The YouTube TV start URL and splash screen were intentionally left unchanged. APK rendering and production-target packaging still require build/device verification.
