@@ -185,7 +185,7 @@ The H5VCC module files carry **Copyright 2026 Reis Can (reisxd)** and an **Apach
 ### Permission / repository administration clarification
 
 - `.github/OWNERS` contains two upstream reviewer email addresses. It is not GitHub's collaborator/admin permission list and does not itself grant those people repository write or admin access.
-- The repository connector available for this audit can check a named collaborator's permission, but it does not expose a complete collaborator list. Actual repository access should be reviewed in **GitHub → Settings → Collaborators and teams**. No collaborator permissions were changed in this pass.
+- The repository connector can check named collaborators but does not expose a complete collaborator list. The known upstream accounts `reisxd`, `erikchen`, and `tluk` were checked and each returned **read** permission (not write/admin). This does not establish that no other collaborator has elevated access. Review the complete list in **GitHub → Settings → Collaborators and teams**. No collaborator permissions were changed in this pass.
 - `.github/workflows/autoroll_main.yaml` is inherited Cobalt automation. Its scheduled trigger is commented out; it is manually dispatchable and uses the `CHERRY_PICK_TOKEN` secret to push autoroll branches / create pull requests. It is not the MyTube Android app build. It was left unchanged pending a decision about whether upstream Cobalt autoroll maintenance is still wanted.
 
 ### Current verified conclusion
@@ -208,3 +208,16 @@ The CoAT development-shell manifest references `@mipmap/ic_app` and `@drawable/a
 - `cobalt/shell/android/java/res/drawable-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/app_banner.png`
 
 The repository also contains `cobalt/android/apk/app/src/app/assets/web/cobalt_logo_1024.png` and Cobalt-named iOS asset-catalog images. These binary assets were not edited in this pass; exact artwork provenance and whether each is shipped in a MyTube production build remain unverified. They must not be presented as MyTube-original artwork. The production app icon/banner path is still unlocated.
+
+
+### Named collaborator permission spot-check
+
+On 2026-11-16, the repository permission endpoint returned:
+
+| GitHub account | Permission |
+|---|---|
+| `reisxd` | `read` |
+| `erikchen` | `read` |
+| `tluk` | `read` |
+
+These are the known upstream identities found in the inherited funding/reviewer metadata. This is only a three-account spot-check; it is not a complete collaborators/team membership export and cannot certify that no other account has write or admin access.
