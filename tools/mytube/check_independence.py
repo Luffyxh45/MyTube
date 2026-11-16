@@ -31,6 +31,8 @@ adapter_h = read("cobalt/browser/mytube_platform_api/mytube_platform_api_impl.h"
 java_gn = read("cobalt/android/BUILD.gn")
 platform_java = read("cobalt/android/apk/app/src/main/java/dev/cobalt/coat/MyTubePlatformApi.java")
 mojom = read("cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom")
+manifest = read("cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2")
+shell_gn = read("cobalt/shell/android/BUILD.gn")
 
 require('"//cobalt/browser/mytube_platform_api"' in browser_gn,
         "browser target builds the MyTube platform adapter")
@@ -65,6 +67,16 @@ require('VideoSurfaceView.getCurrentSurface()' in platform_java,
 require('instanceof CobaltActivity' not in platform_java
         and '((CobaltActivity)' not in platform_java,
         "platform helper does not depend on the non-Starboard activity class")
+require('android:icon="@drawable/mytube_icon"' in manifest,
+        "Android launcher uses the MyTube icon")
+require('android:banner="@drawable/mytube_banner"' in manifest,
+        "Android TV launcher uses the MyTube banner")
+require('"java/res/drawable/mytube_icon.xml"' in shell_gn
+        and '"java/res/drawable/mytube_banner.xml"' in shell_gn,
+        "MyTube vector branding resources are packaged")
+for density in ("hdpi", "mdpi", "xhdpi", "xxhdpi", "xxxhdpi"):
+    require(not (ROOT / f"cobalt/shell/android/java/res/drawable-{density}/app_banner.png").exists(),
+            f"obsolete TizenTube banner removed ({density})")
 
 for licence in ("LICENSE", "LICENSE.chromium_os", "starboard/LICENSE", "AUTHORS"):
     require((ROOT / licence).is_file(), f"upstream notice retained: {licence}")
