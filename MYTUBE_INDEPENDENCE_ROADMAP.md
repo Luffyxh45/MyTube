@@ -2,80 +2,95 @@
 
 **Repository:** `Luffyxh45/MyTube`  
 **Working branch:** `mytube-branding`  
-**Purpose:** Move MyTube toward independent ownership and maintenance without breaking supported builds or violating upstream licences.
+**Status checked:** 2026-11-16  
+**Purpose:** Make MyTube independently maintainable and releasable without relying on TizenTube or its owner, while preserving all applicable upstream licences.
 
 ## Independence goal
 
-MyTube will be maintained and released by its own project owner. It must not require TizenTube's owner, repository, release pipeline, branding, private infrastructure, or permission to continue development.
+MyTube will own and control its project identity, application-layer code that we independently create, build/release automation, signing and distribution process, documentation, and maintenance decisions.
 
-This does **not** mean inherited code becomes MyTube-owned. Copyright and licence obligations for Chromium, Cobalt, Starboard, and third-party components remain in force unless code is independently replaced or the relevant rights are obtained.
+There are two different goals:
 
-## Current repository facts observed
+- **Operational independence from TizenTube:** MyTube can build, maintain, package and release without TizenTube's owner, repository, CI, private services, credentials or approval.
+- **Runtime independence:** MyTube eventually replaces the inherited Cobalt/Chromium engine with a separately implemented engine. This is a much larger project and is not achieved by renaming or relicensing Cobalt.
+
+A fork does not transfer copyright. Existing Chromium, Cobalt, Starboard, TizenTube-derived and third-party code must keep the notices and licence terms that apply to it. MyTube may license its own original code separately, once authorship and rights are clear.
+
+## Verified repository facts
 
 - The repository is a very large Chromium/Cobalt-derived source tree, not a small standalone application repository.
-- The root `LICENSE` contains a Chromium BSD-style licence notice.
-- `starboard/LICENSE` contains Apache License 2.0.
-- `AUTHORS` is an upstream contributor record and must not be replaced with a MyTube-only author list.
-- `starboard/README.md` describes Starboard as Cobalt's platform/OS abstraction layer.
-- `cobalt/CHANGELOG.md` contains upstream Cobalt release history.
-- `.gitmodules` still declares numerous external repositories, including conditional internal Google-hosted dependencies. These must be assessed against actual build targets before removal.
-- The existing ownership audit records a truncated recursive Git tree response and explicitly does not certify every file.
-- The existing audit identifies TizenTube-named banner assets under `.github/assets/`; their origin, rights, and usage need verification before replacement or deletion.
+- The recursive Git tree response was marked **truncated** (more than 57,000 entries were returned). A complete file-by-file audit is not yet possible from that response.
+- Root `LICENSE` contains Chromium BSD-style terms; `LICENSE.chromium_os` contains ChromiumOS BSD-style terms.
+- `starboard/LICENSE` contains Apache-2.0 terms. Cobalt and many other files also carry their own copyright/licence headers.
+- `AUTHORS` is an inherited contributor record and must not be replaced with a MyTube-only list.
+- `third_party/` contains hundreds of dependency directories; individual packages and nested dependencies require their own licence review.
+- `.gitmodules` still contains many upstream submodule declarations, including conditional platform, test and internal Google-hosted dependencies. Their presence does not prove they are required by MyTube's supported build. Do not remove them wholesale.
+- Five root-level gitlinks (`clank`, `internal`, `ios_internal`, `native_client`, `signing_keys`) were removed on this branch in earlier cleanup. This did not remove all upstream dependencies or all similarly named conditional submodule declarations.
+- The three TizenTube-named banner assets under `.github/assets/` and the inherited `.github/FUNDING.yml` were removed on this branch. The old assets should no longer be described as present.
+- `README.md` identifies MyTube as a Cobalt-based streaming app and credits the project maintainer as MyTube by Luffy. It also acknowledges third-party licences.
+- `cobalt/android/BUILD.gn` sets `com.luffy.mytube` for the CoAT development-shell manifest generation. This is **not proof** that the production Kimono APK uses that package ID.
+- `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` labels the CoAT development shell as MyTube. Its own comments explicitly say this manifest does not affect the production Kimono app. The YouTube TV URL and splash-screen metadata remain unchanged.
+- The TizenTube-derived module under `cobalt/browser/h5vcc_tizentube/` is still part of the Cobalt browser build. Its inspected C++ and Mojo files carry **Copyright 2026 Reis Can (reisxd)** and Apache-2.0 headers. `cobalt/browser/BUILD.gn` depends on the module, and `cobalt/browser/cobalt_browser_interface_binders.cc` registers its Mojo interface. It currently implements app installation from URL, version/device information, frame-rate setting and user-agent override. This is a local source dependency in the repository, not evidence of a runtime call to the TizenTube owner's server; however, its source provenance and required attribution remain.
+- The inspected `.github/OWNERS` file lists Chromium reviewers. It is a code-review ownership file, not GitHub collaborator permissions and does not itself grant repository write/admin access.
+- The branch comparison currently shows `mytube-branding` is 21 commits ahead of `main` and 0 behind. This branch has not been merged into `main`.
 
-## Rules that protect the project
+## Safe rules
 
 1. Never replace upstream copyright notices with a MyTube notice.
-2. Never remove a licence or third-party notice just to make the repository look independently owned.
-3. Do not remove a submodule, dependency, workflow, or source directory until its use in the supported MyTube build is established.
-4. Keep MyTube-authored changes clearly separated in commits and document their provenance.
-5. Do not claim the whole repository or binary is exclusively owned by MyTube while upstream code remains.
-6. Use original MyTube branding and assets; do not reuse TizenTube artwork unless permission and provenance are verified.
-7. Every release must include the notices required by the licences of the code and assets it distributes.
+2. Never remove licence texts or third-party notices merely to make the repository look independently owned.
+3. Do not delete a dependency, module, submodule, workflow or source directory until its use in the supported production build is understood.
+4. Keep MyTube-authored work in clearly scoped files and commits; document source and provenance.
+5. Preserve third-party attribution in releases and About/credits material where required.
+6. Use original MyTube artwork and branding. Do not reuse third-party artwork without verified rights.
+7. Do not claim that a fork or renamed Cobalt tree is a new engine.
+8. Do not merge changes into `main` or publish a release until the relevant build and licence checks pass.
 
 ## Work stages
 
-### Stage 1 — Establish a reliable baseline
+### Stage 1 — Establish the production baseline
 
-- Identify the exact MyTube application entry point, supported target(s), package metadata, and release artifacts.
-- Record the current build instructions and workflows.
-- Produce a complete repository manifest in directory-sized batches; the recursive tree endpoint is truncated.
-- Inventory submodules, DEPS entries, generated files, assets, and third-party packages.
-- Run source-header and SPDX/licence scans, then manually review ambiguous and shipped components.
-- Save a known-good build configuration and test evidence before changing dependencies.
+- Locate the actual production app entry point (Kimono or other target), package ID, signing config, app icon/banner, splash screen, and release workflow.
+- Identify the exact supported device/platform target and reproduce its current build before changing core dependencies.
+- Generate a complete Git manifest by recursively enumerating directory trees in smaller requests; the recursive root response is truncated.
+- Inventory tracked files, gitlinks, submodules, DEPS entries, generated files, assets and third-party package metadata.
+- Run automated copyright/SPDX/licence scanning, then manually review ambiguous files and all shipped components.
+- Record a known-good build and test baseline.
 
-**Exit condition:** We can identify exactly what is built, what is shipped, and which dependencies are required.
+**Exit condition:** We know exactly which target is shipped, how it is built, what it contains and which dependencies it requires.
 
 ### Stage 2 — Remove operational dependence on TizenTube
 
-- Replace TizenTube-specific project links, banners, release references, templates, and About/credits wording with original MyTube material where legally appropriate.
-- Remove TizenTube-specific automation only after confirming it is not needed for builds or releases.
-- Ensure issues, documentation, CI, versioning, signing, and release publishing are controlled by the MyTube repository.
-- Verify there are no required secrets, private repositories, owner-controlled services, or external release jobs belonging to TizenTube.
+- Search all tracked files and project metadata for TizenTube names, URLs, package identifiers, owner-controlled services and release references.
+- Trace the `h5vcc_tizentube` API from the YouTube TV page contract through its Mojo registration and Android Starboard bridge.
+- Design a MyTube-owned replacement implementation for the needed API behaviour. Keep a compatibility adapter if the YouTube TV client still expects the old API name.
+- Do not delete or rename the existing module until the replacement compiles and compatibility tests demonstrate that install, device info, frame-rate and user-agent features still work.
+- Preserve Reis Can's existing copyright and Apache-2.0 notice in any retained or modified derivative files; independently authored replacement files must have accurate authorship and licensing.
+- Verify issue tracking, CI, signing, versioning, releases, documentation and credentials are controlled by MyTube.
 
-**Exit condition:** MyTube can be built, tested, documented, and released solely through infrastructure controlled by the MyTube maintainer.
+**Exit condition:** MyTube's build, app-layer runtime services, CI, signing and releases no longer require TizenTube's owner or infrastructure.
 
-### Stage 3 — Own the application layer
+### Stage 3 — Own the MyTube application layer
 
-- Isolate MyTube application code, UI, configuration, integrations, and platform packaging from inherited runtime code.
-- Maintain original MyTube modules in clearly named locations with appropriate copyright and licence headers.
-- Replace inherited TizenTube-specific application modules with independently implemented equivalents, preserving behaviour through tests.
-- Keep a compatibility layer where required so the app continues to work while components are replaced.
+- Isolate MyTube-specific app code, UI, configuration, integrations and packaging from inherited Cobalt runtime code.
+- Implement MyTube modules independently and keep them in clearly scoped directories.
+- Replace TizenTube-derived app modules one at a time, preserving behaviour with tests.
+- Keep a compatibility layer where required by the YouTube TV client.
 
-**Exit condition:** The MyTube application layer is independently maintained and no longer imports or requires TizenTube-owned application modules.
+**Exit condition:** The MyTube application layer is maintained by MyTube and no longer depends on TizenTube-authored application modules.
 
-### Stage 4 — Reduce and eventually replace runtime dependence
+### Stage 4 — Control and reduce runtime dependence
 
-- First maintain a MyTube-controlled Cobalt fork with pinned, documented upstream revisions and a reproducible build.
-- Replace runtime components incrementally only where a realistic alternative exists and can pass compatibility tests.
-- If the long-term target is a fully independent engine, design and implement that engine as a separate project. Do not pretend a renamed Cobalt fork is a new engine.
-- Preserve all upstream licences for code that remains in the fork.
+- Maintain a MyTube-controlled Cobalt fork with pinned upstream revisions, reproducible build instructions and an explicit update policy.
+- Reduce unused Chromium platform/test code only after supported target analysis.
+- Replace engine components incrementally only when a viable alternative exists and passes compatibility tests.
+- Treat a fully independent browser/TV engine as a separate long-term engineering project with its own architecture, implementation, tests and dependency inventory.
 
-**Exit condition:** Any claimed runtime independence is backed by a separate implementation, build, tests, and dependency inventory—not just branding or a renamed directory.
+**Exit condition:** Any claim of runtime independence is supported by a separate working implementation, not by branding changes.
 
 ## Definition of done
 
-MyTube may be called operationally independent of TizenTube when its build, source maintenance, CI, signing, releases, documentation, and app-layer code no longer require TizenTube or its owner.
+MyTube is **operationally independent of TizenTube** when its application code, build, CI, signing, release process, documentation and maintenance no longer require TizenTube or its owner.
 
-MyTube may be called runtime-independent only after it no longer depends on the inherited Cobalt runtime and its replacement is implemented and verified.
+MyTube is **runtime-independent** only when it no longer relies on the inherited Cobalt/Chromium runtime and a replacement engine is implemented and verified.
 
-A file-by-file ownership/licence audit and a successful supported-platform build are mandatory release gates. This roadmap is an engineering plan, not legal advice or a licence certification.
+A complete file-by-file licence audit, verified production package identity, generated third-party notices and a successful supported-platform build are release gates. This roadmap is an engineering plan, not legal advice or a licence certification.
