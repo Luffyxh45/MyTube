@@ -40,15 +40,15 @@ The following are preservation requirements:
 
 ## Verified starting point
 
-The current branch contains a TizenTube-derived native integration in the Cobalt browser:
+The current branch has a MyTube-owned native platform implementation registered in the Cobalt browser. The obsolete TizenTube-specific C++ implementation target and source files have been removed from the active tree. The public Mojo interface remains under `cobalt/browser/h5vcc_tizentube/public/mojom/` as a compatibility contract for the existing YouTube TV client.
 
-- `cobalt/browser/h5vcc_tizentube/` defines the native H5VCC implementation and Mojo interface.
-- `cobalt/browser/BUILD.gn` includes that implementation in the browser dependency graph.
-- `cobalt/browser/cobalt_browser_interface_binders.cc` registers the interface binder.
-- `starboard/android/shared/starboard_bridge.h` and `base_starboard_bridge.cc` contain bridge support for the integration.
-- `cobalt/android/apk/app/src/main/java/dev/cobalt/coat/BaseStarboardBridge.java` contains Android-side bridge methods.
+- `cobalt/browser/mytube_platform_api/` contains the MyTube C++ adapter and internal service.
+- `cobalt/browser/cobalt_browser_interface_binders.cc` binds the existing web-facing Mojo contract to `mytube::PlatformApiImpl`.
+- `cobalt/browser/BUILD.gn` depends on the MyTube implementation plus the legacy public Mojom target; it no longer depends on the deleted legacy implementation target.
+- `starboard/android/shared/starboard_bridge.h` and `base_starboard_bridge.cc` provide the existing Android JNI bridge.
+- `cobalt/android/apk/app/src/main/java/dev/cobalt/coat/BaseStarboardBridge.java` delegates platform operations to the new MyTube Java helper, `MyTubePlatformApi.java`.
 
-The inspected TizenTube-specific C++ and Mojo files carry Reis Can copyright notices and Apache-2.0 headers. Those notices must not be replaced with MyTube authorship claims. The integration is present in source/build wiring; this does not prove that a running app contacts TizenTube-owned servers or requires owner approval.
+The retained Mojom definition carries Reis Can's original Apache-2.0 copyright notice and must remain attributed unless a proven compatible migration replaces it. This local compatibility dependency does not establish that MyTube contacts TizenTube-owned servers or requires the former owner's approval.
 
 The existing `OWNERSHIP_AND_LICENSE_AUDIT.md` is the evidence log. Its scope limitations remain important: the recursive Git tree was truncated, the full file inventory is incomplete, and no production build/runtime validation has yet been completed.
 
@@ -120,7 +120,8 @@ The existing `OWNERSHIP_AND_LICENSE_AUDIT.md` is the evidence log. Its scope lim
 - [ ] Supported production build target and baseline verified.
 - [x] MyTube-owned Android platform backend implemented and wired behind the legacy H5VCC interface.
 - [ ] Supported Cobalt/Android build and runtime tests passed.
-- [ ] Legacy TizenTube-named Mojo contract and obsolete implementation sources removed safely.
+- [x] Obsolete legacy TizenTube C++ implementation target and source files removed safely.
+- [ ] Legacy TizenTube-named Mojo compatibility contract migrated after web-client consumer contract is verified.
 - [ ] MyTube-only build and release pipeline verified.
 - [ ] Third-party notices generated and checked in release artifacts.
 
@@ -148,3 +149,18 @@ The APK installer implementation now accepts HTTPS URLs only, validates HTTPS re
 
 
 The follow-up Java cleanup removed imports made unused by the extraction. Static source checks confirm the main browser target and binder reference the MyTube implementation, while the legacy Mojo type remains intentionally in place. No compile or runtime test has yet been run.
+
+
+## Implementation log — native cleanup and Android build wiring review — 2026-11-16
+
+The unused legacy C++ implementation was removed from the active branch:
+
+- Deleted `cobalt/browser/h5vcc_tizentube/BUILD.gn`.
+- Deleted `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.h`.
+- Deleted `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.cc`.
+- Kept the public Mojom contract and its original attribution, because the current binder still exposes that contract to the existing web client.
+- Added comments to the browser binder and GN dependency to distinguish the retained compatibility contract from the removed implementation.
+
+A further static build-file review found that `MyTubePlatformApi.java` was not listed in the `cobalt_main_java` GN source list. It has now been added. The same review found a misspelled Android frame-rate preference constant and an unnecessary dependency on `CobaltActivity`, which is not part of every Starboard Android source configuration. The helper now uses the shared active `VideoSurfaceView` surface directly and uses the correctly named Android preference constant.
+
+These are source-level corrections only. The repository has not been compiled in this session; GN generation, C++/Java compilation, APK packaging and target-device tests remain unverified. The complete licence inventory and production release pipeline also remain outstanding.
