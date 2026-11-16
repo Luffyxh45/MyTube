@@ -1,0 +1,43 @@
+name: MyTube Android TV APKs
+
+on:
+  push:
+    branches: [mytube-branding]
+    paths:
+      - "cobalt/android/**"
+      - "cobalt/browser/**"
+      - "cobalt/shell/android/**"
+      - ".github/config/mytube-android-*.json"
+      - ".github/workflows/main.yaml"
+      - ".github/workflows/mytube-android-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mytube-android-apks-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  arm32:
+    name: Build MyTube ARM32 TV APK
+    uses: ./.github/workflows/main.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      platform: mytube-android-arm
+      nightly: "false"
+    secrets: inherit
+
+  arm64:
+    name: Build MyTube ARM64 TV APK
+    uses: ./.github/workflows/main.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      platform: mytube-android-arm64
+      nightly: "false"
+    secrets: inherit
