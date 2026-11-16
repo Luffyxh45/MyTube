@@ -29,7 +29,7 @@
 #include "cobalt/browser/h5vcc_metrics/public/mojom/h5vcc_metrics.mojom.h"
 #include "cobalt/browser/h5vcc_native_stability/h5vcc_native_stability_impl.h"
 #include "cobalt/browser/h5vcc_native_stability/public/mojom/h5vcc_native_stability.mojom.h"
-#include "cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.h"
+#include "cobalt/browser/mytube_platform_api/mytube_platform_api_impl.h"
 #include "cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom.h"
 #include "cobalt/browser/h5vcc_runtime/h5vcc_runtime_impl.h"
 #include "cobalt/browser/h5vcc_runtime/public/mojom/h5vcc_runtime.mojom.h"
@@ -214,7 +214,7 @@ void PopulateCobaltFrameBinders(
       base::BindRepeating(&h5vcc_platform_service::
                               H5vccPlatformServiceManagerImpl::GetOrCreate));
   binder_map->Add<h5vcc_tizentube::mojom::H5vccTizentube>(
-      base::BindRepeating(&h5vcc_tizentube::H5vccTizentubeImpl::Create));
+      base::BindRepeating(&mytube::PlatformApiImpl::Create));
 }
 
 }  // namespace cobalt
