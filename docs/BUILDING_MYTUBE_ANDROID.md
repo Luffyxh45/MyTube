@@ -13,7 +13,7 @@ The workflow currently uses GitHub's standard hosted `ubuntu-latest` runner. No 
 
 **Resource warning:** Cobalt/Chromium Android builds are unusually large. A standard GitHub-hosted runner has substantially less disk space and memory than the dedicated private runner used by some upstream projects. The workflow now warns when less than 80 GB is available, but deliberately continues so we can measure the actual failure point. Builds may fail from disk exhaustion, memory pressure, missing host dependencies, or the hosted job time limit. A failed attempt does not mean the source code itself is broken.
 
-The workflow checks the available tools, installs Chromium `depot_tools` in the temporary runner directory, configures each ABI with `cobalt/build/gn.py`, builds `cobalt_install`, checks the APK archive and expected ABI directory, calculates SHA-256, and uploads separate 30-day artifacts when successful.
+The workflow checks the available tools, installs Chromium `depot_tools` in the temporary runner directory, configures each ABI with `cobalt/build/gn.py`, builds `cobalt_install`, checks the APK archive and expected ABI directory, calculates SHA-256, and uploads separate 90-day APK artifacts when successful. It also uploads a 14-day diagnostic artifact containing build metadata and captured configure/build logs, including when a build fails.
 
 ## Run a build
 
@@ -28,6 +28,6 @@ If the hosted runner runs out of resources, the next step is a larger cloud VM o
 
 ## Release safety
 
-A successful workflow run proves that the configured target compiled and produced an APK archive with the expected ABI directory. It does **not** prove installation, playback, YouTube TV compatibility, SponsorBlock behavior, signing for public distribution, or that the generated CoAT shell is the final production Kimono app. Those checks remain required before publishing a public release. The workflow therefore uploads build artifacts only; it does not create a public GitHub Release or sign with a production key.
+A successful workflow run proves that the configured target compiled and produced an APK archive with the expected ABI directory. It does **not** prove installation, playback, YouTube TV compatibility, SponsorBlock behavior, signing for public distribution, or that the generated CoAT shell is the final production Kimono app. Those checks remain required before publishing a public release. The workflow therefore uploads build and diagnostic artifacts only; it does not create a public GitHub Release or sign with a production key. Git history remains the source-code backup. GitHub Actions artifacts are temporary backups, not permanent archival storage. A separate OneDrive/Google Drive copy can be added only after the account owner authorizes a secure upload integration; no cloud-storage credentials are committed to this repository.
 
 The generated debug/development APK must be treated as a test candidate until its package ID, launcher branding, install/upgrade behavior, and TV playback are verified on supported hardware.
