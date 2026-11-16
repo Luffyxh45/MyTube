@@ -64,6 +64,9 @@ jobs:
         run: |
           set -euxo pipefail
           gclient config --name=src "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          # Chromium must be told to fetch the Android-specific toolchain/deps.
+          printf "\ntarget_os = ['android']\n" >> .gclient
+          grep -F "target_os = ['android']" .gclient
           gclient sync --verbose --shallow --no-history --nohooks --force --revision "${GITHUB_SHA}"
           gclient runhooks --verbose
 
