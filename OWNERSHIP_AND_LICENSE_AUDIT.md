@@ -387,3 +387,20 @@ No full build or runtime test was run as part of this follow-up review. The curr
 3. Migrate binder registration and browser GN dependencies to the new interface.
 4. Build and test the target before removing the inherited Mojom and remaining implementation files.
 5. Keep the upstream licence/copyright header on the old files until they are deleted; do not overwrite it with MyTube authorship.
+
+## Playback and YouTube TV preservation check — 2026-11-16
+
+Compared `main` against `mytube-branding` at the current branch head. The GitHub compare response reports the working branch is 45 commits ahead and 0 behind. In the returned changed-file list, no Cobalt media pipeline, player, demuxer, decoder, video rendering, or YouTube TV web-app playback files are listed as changed. The changes are concentrated in repository branding/metadata, DEPS and submodule cleanup, MyTube platform bridge extraction, and documentation.
+
+This is a **source-diff preservation check only**. It supports the statement that the recorded MyTube independence changes have not intentionally rewritten the underlying Cobalt playback engine or player code. It does not prove that runtime behavior is identical, that SponsorBlock/ad skipping works, or that all playback quality options work on a device.
+
+### Locked compatibility requirements
+
+- Keep the current YouTube TV interface and navigation.
+- Keep the existing player, stream handling, quality/resolution selection, adaptive quality, buffering, seeking, captions, and playback controls.
+- Keep existing SponsorBlock and sponsor skipping behavior.
+- Keep existing ad-skipping behavior, subject to applicable platform terms and law.
+- Do not replace or rewrite media/player code as part of platform backend extraction.
+- Before any future playback-related modification, capture a known-good build/device baseline and run the regression checklist in `MYTUBE_INDEPENDENCE_PLAN.md`.
+
+**Runtime verification status:** NOT RUN. No Cobalt/Android build or device playback test was executed during this check.
