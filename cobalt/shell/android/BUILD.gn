@@ -32,6 +32,8 @@ android_resources("cobalt_shell_java_resources") {
     "java/res/drawable-xhdpi/app_banner.png",
     "java/res/drawable-xxhdpi/app_banner.png",
     "java/res/drawable-xxxhdpi/app_banner.png",
+    "java/res/drawable/mytube_icon.xml",
+    "java/res/drawable/mytube_banner.xml",
     "java/res/layout/coat_error_dialog.xml",
     "java/res/mipmap-hdpi/ic_app.png",
     "java/res/mipmap-mdpi/ic_app.png",
