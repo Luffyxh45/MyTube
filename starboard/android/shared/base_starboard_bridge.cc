@@ -461,7 +461,7 @@ void StarboardBridge::HideSplashScreen(JNIEnv* env) const {
   Java_BaseStarboardBridge_hideSplashScreen(env, j_starboard_bridge_);
 }
 
-// TizenTube Cobalt APIs
+// MyTube platform operations used by the legacy H5VCC adapter
 bool StarboardBridge::InstallAppFromURL(JNIEnv* env, const char* url) const {
   SB_CHECK(env);
   return Java_BaseStarboardBridge_installAppFromURL(
