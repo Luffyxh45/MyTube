@@ -41,6 +41,20 @@ jobs:
           fetch-depth: 0
           clean: true
 
+      - name: Initialize build backup directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p mytube-build-logs
+          {
+            echo "MyTube Android build backup"
+            echo "Commit: \${GITHUB_SHA}"
+            echo "Branch: \${GITHUB_REF_NAME}"
+            echo "Platform: \${PLATFORM}"
+            echo "Runner: \${RUNNER_OS} / \${RUNNER_ARCH}"
+            echo "Started (UTC): $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } | tee mytube-build-logs/build-info.txt
+
       - name: Check builder capacity and prerequisites
         shell: bash
         run: |
@@ -89,13 +103,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 cobalt/build/gn.py -p "${PLATFORM}" -c "${BUILD_TYPE}" --no-rbe
+          python3 cobalt/build/gn.py -p "${PLATFORM}" -c "${BUILD_TYPE}" --no-rbe 2>&1 | tee mytube-build-logs/configure.log
 
       - name: Build CoAT installable APK
         shell: bash
         run: |
           set -euo pipefail
-          "${DEPOT_TOOLS_DIR}/autoninja" -C "out/${PLATFORM}_${BUILD_TYPE}" cobalt_install
+          "${DEPOT_TOOLS_DIR}/autoninja" -C "out/${PLATFORM}_${BUILD_TYPE}" cobalt_install 2>&1 | tee mytube-build-logs/build.log
           test -s "out/${PLATFORM}_${BUILD_TYPE}/cobalt.apk"
 
       - name: Verify APK and record checksum
@@ -117,6 +131,14 @@ jobs:
           fi
           sha256sum "${apk}" | tee SHA256SUMS.txt
           cp "${apk}" "MyTube-${PLATFORM}.apk"
+          {
+            echo "Artifact: MyTube-${PLATFORM}.apk"
+            echo "Platform: ${PLATFORM}"
+            echo "ABI: $([ "${PLATFORM}" = "android-arm" ] && echo armeabi-v7a || echo arm64-v8a)"
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Built (UTC): $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "APK size: $(stat -c %s "${apk}") bytes"
+          } | tee build-metadata.txt
 
       - name: Upload APK build artifact
         uses: actions/upload-artifact@v4
@@ -126,5 +148,16 @@ jobs:
             MyTube-${{ matrix.platform }}.apk
             SHA256SUMS.txt
             apk-badging.txt
+            build-metadata.txt
           if-no-files-found: error
-          retention-days: 30
+          compression-level: 0
+          retention-days: 90
+
+      - name: Upload diagnostic backup (including failed builds)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyTube-${{ matrix.platform }}-diagnostics-${{ github.run_id }}
+          path: mytube-build-logs/
+          if-no-files-found: warn
+          retention-days: 14
