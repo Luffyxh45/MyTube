@@ -287,3 +287,38 @@ No inherited Cobalt, Chromium, Starboard, TizenTube-derived implementation, copy
 The next implementation task remains a complete call-graph review of the H5VCC API from the web application through Mojo, C++, JNI, and Java, followed by a MyTube-owned compatible implementation and build/runtime tests.
 
 The full file-by-file audit, production build verification, and proof of a TizenTube-independent release remain incomplete. Do not describe MyTube as fully independent or the repository as wholly MyTube-owned until the release gates in `MYTUBE_INDEPENDENCE_PLAN.md` are met.
+
+
+## H5VCC bridge call-chain inspection — 2026-11-16
+
+**Inspected branch revision before this addendum:** `bfe769e15b9ee1cc99c9edc8107849ad4c0854b9`
+
+A targeted source inspection traced the native-to-Android portion of the TizenTube-derived API:
+
+1. `cobalt/browser/cobalt_browser_interface_binders.cc` includes and registers `h5vcc_tizentube::mojom::H5vccTizentube`.
+2. `cobalt/browser/BUILD.gn` adds the `h5vcc_tizentube` implementation and generated Mojo target to the browser dependencies.
+3. `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.cc` implements the interface and delegates Android-specific operations to `starboard::StarboardBridge`; it also writes the user-agent override through Cobalt's global settings.
+4. `starboard/android/shared/starboard_bridge.h` declares the platform bridge methods, and `starboard/android/shared/base_starboard_bridge.cc` forwards them to generated JNI methods.
+5. `cobalt/android/apk/app/src/main/java/dev/cobalt/coat/BaseStarboardBridge.java` implements the Android operations.
+
+### Android operations found
+
+- Install an APK from a supplied URL.
+- Return the installed app version.
+- Return the device name / brand-model value.
+- Return the first supported CPU ABI.
+- Request a display frame rate, subject to Android version, supported refresh rates, and system preference.
+- Enter picture-in-picture mode.
+- Query an Android system feature.
+- Display an alert dialog.
+- Set the Cobalt user-agent override through the native implementation.
+
+### Security and behavior notes
+
+The inspected Java `installAppFromURL` method downloads the supplied URL to a fixed app-private file and then launches an APK install intent. The inspected implementation does not visibly restrict the URL to HTTPS or an approved host, does not impose a download-size limit, and swallows download/install exceptions. It returns `true` immediately after scheduling asynchronous work, not after confirming that installation succeeded. This deserves a security review and a safer MyTube-owned design; it must not be copied blindly into a replacement.
+
+### Remaining unknowns
+
+This inspection confirms the native/Java path, but it does **not** establish which methods the YouTube TV web application actually calls, whether every operation is required on the supported production device, or whether the Mojo interface is consumed through a web-facing compatibility binding elsewhere. A full search of all tracked source and generated bindings, plus a runtime trace on the actual target, is still required before changing the interface name or deleting the old module.
+
+**Next safe action:** implement a MyTube-maintained backend behind a compatibility boundary, first verifying the web-facing contract. Preserve existing behavior only where required, and add explicit validation/error reporting for app installation.
