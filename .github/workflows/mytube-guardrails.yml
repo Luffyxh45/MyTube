@@ -29,7 +29,7 @@ jobs:
             /cobalt/browser/BUILD.gn
             /cobalt/browser/cobalt_browser_interface_binders.cc
             /cobalt/browser/mytube_platform_api/
-            /cobalt/browser/h5vcc_tizentube/public/mojom/
+            /cobalt/browser/h5vcc_tizentube/
             /cobalt/android/BUILD.gn
             /cobalt/android/apk/app/src/main/java/dev/cobalt/coat/
             /cobalt/shell/android/BUILD.gn
