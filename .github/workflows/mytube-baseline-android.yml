@@ -40,6 +40,15 @@ jobs:
           path: cobalt/src
           fetch-depth: 1
 
+      - name: Install Linux build dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes gperf
+          command -v gperf
+          gperf --version
+
       - name: Install depot_tools
         shell: bash
         run: |
