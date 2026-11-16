@@ -6,6 +6,8 @@ source_set("mytube_platform_api") {
   sources = [
     "mytube_platform_api_impl.cc",
     "mytube_platform_api_impl.h",
+    "mytube_platform_api_service.cc",
+    "mytube_platform_api_service.h",
   ]
 
   deps = [
