@@ -39,6 +39,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      pull-requests: write
     with:
       platform: mytube-android-arm64
       nightly: "false"
