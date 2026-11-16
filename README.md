@@ -1,6 +1,8 @@
 # MyTube
 
-MyTube is a streaming app built on the Cobalt runtime. It enhances the viewing experience with ad blocking, SponsorBlock support, video speed controls, and DeArrow integration.
+MyTube is a streaming app built on the Cobalt runtime.
+
+**Author:** MyTube by Luffy. It enhances the viewing experience with ad blocking, SponsorBlock support, video speed controls, and DeArrow integration.
 
 ## Features
 
