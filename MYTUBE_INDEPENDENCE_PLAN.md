@@ -97,11 +97,30 @@ The existing `OWNERSHIP_AND_LICENSE_AUDIT.md` is the evidence log. Its scope lim
 - [ ] Full tracked-file inventory completed without truncation.
 - [ ] Complete source, asset, and dependency provenance review completed.
 - [ ] Supported production build target and baseline verified.
-- [ ] MyTube-owned replacement implemented and tested.
-- [ ] TizenTube-specific integration removed safely.
+- [x] MyTube-owned Android platform backend implemented and wired behind the legacy H5VCC interface.
+- [ ] Supported Cobalt/Android build and runtime tests passed.
+- [ ] Legacy TizenTube-named Mojo contract and obsolete implementation sources removed safely.
 - [ ] MyTube-only build and release pipeline verified.
 - [ ] Third-party notices generated and checked in release artifacts.
 
 ## Immediate next engineering task
 
 Trace the complete H5VCC contract from the YouTube TV web application through Mojo, C++, Starboard JNI, and Java. Identify which methods are actually called by the supported application and which are unused. Use that call graph to design the smallest compatible MyTube replacement.
+
+
+## Implementation log — MyTube backend extraction
+
+**Branch revision after this step:** `e8354df0ebbe7fd2eb05b8f44ef339373ea816e6`
+
+A first MyTube-owned replacement layer has now been added without deleting the legacy compatibility contract:
+
+- `cobalt/android/apk/app/src/main/java/dev/cobalt/coat/MyTubePlatformApi.java` contains newly authored Android platform operations for package version, device identity, CPU ABI, frame-rate requests, picture-in-picture, feature checks, dialogs, and APK installation.
+- `BaseStarboardBridge.java` keeps its JNI entry-point names but delegates those operations to `MyTubePlatformApi`.
+- `cobalt/browser/mytube_platform_api/` contains a MyTube-owned C++ `DocumentService` implementation.
+- `cobalt/browser/BUILD.gn` and `cobalt_browser_interface_binders.cc` now build and register the MyTube implementation behind the existing H5VCC Mojo interface.
+- The legacy interface remains at `cobalt/browser/h5vcc_tizentube/public/mojom/` as a compatibility contract. The old TizenTube implementation source files are still present but are no longer the implementation registered by the browser target.
+- The native Starboard bridge comments now describe these as MyTube platform operations. Existing Chromium/Cobalt copyright and licence notices were not replaced.
+
+The APK installer implementation now accepts HTTPS URLs only, validates HTTPS redirects, applies connection/read timeouts and a 100 MiB size limit, checks that the downloaded ZIP contains `AndroidManifest.xml`, and routes installation through Android's user-confirmed package installer. It also reports failures to the Android log instead of silently swallowing them.
+
+**Not yet verified:** no GN generation, C++/Java build, APK packaging, device runtime test, or automated regression test has been run. The old Mojo interface and old source files must not be removed until the supported target builds and the YouTube TV consumer contract is verified.
