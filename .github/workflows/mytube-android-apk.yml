@@ -21,7 +21,7 @@ concurrency:
 jobs:
   build:
     name: Build ${{ matrix.platform }} APK
-    runs-on: [self-hosted, linux, x64, mytube-android-builder]
+    runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
       fail-fast: false
@@ -48,9 +48,9 @@ jobs:
           echo "Disk space:"
           df -h .
           free_gb=$(df -BG . | awk 'NR==2 {gsub(/G/, "", $4); print $4}')
+          echo "Available disk space: ${free_gb} GB"
           if [ "${free_gb}" -lt 80 ]; then
-            echo "::error::At least 80 GB free disk space is required; 100 GB is recommended for Cobalt Android builds."
-            exit 1
+            echo "::warning::This GitHub-hosted runner has less than the 80 GB recommended for Cobalt. Continuing with a best-effort build; disk exhaustion may stop the build."
           fi
           command -v python3
           command -v java
