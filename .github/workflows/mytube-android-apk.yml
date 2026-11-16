@@ -48,10 +48,10 @@ jobs:
           mkdir -p mytube-build-logs
           {
             echo "MyTube Android build backup"
-            echo "Commit: \${GITHUB_SHA}"
-            echo "Branch: \${GITHUB_REF_NAME}"
-            echo "Platform: \${PLATFORM}"
-            echo "Runner: \${RUNNER_OS} / \${RUNNER_ARCH}"
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Branch: ${GITHUB_REF_NAME}"
+            echo "Platform: ${PLATFORM}"
+            echo "Runner: ${RUNNER_OS} / ${RUNNER_ARCH}"
             echo "Started (UTC): $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           } | tee mytube-build-logs/build-info.txt
 
