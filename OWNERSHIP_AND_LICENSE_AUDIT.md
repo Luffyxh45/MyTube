@@ -404,3 +404,35 @@ This is a **source-diff preservation check only**. It supports the statement tha
 - Before any future playback-related modification, capture a known-good build/device baseline and run the regression checklist in `MYTUBE_INDEPENDENCE_PLAN.md`.
 
 **Runtime verification status:** NOT RUN. No Cobalt/Android build or device playback test was executed during this check.
+
+## Compatibility and provenance review — 2026-11-16 (latest branch comparison)
+
+Compared `main` with `mytube-branding` using GitHub's commit comparison. At the time of review the branch was **46 commits ahead, 0 behind**. The complete returned changed-file list contains repository metadata/docs, DEPS and submodule records, Android platform bridge files, MyTube platform API files, and manifest metadata. It does **not** list changes under the Cobalt media pipeline, Chromium media pipeline, video decoders/demuxers, or player-rendering implementation.
+
+This supports a narrow source-level conclusion: the current independence branch changes have not directly rewritten the inherited playback engine. It does not establish playback equivalence at runtime, and does not prove every TizenTube feature works in the current APK.
+
+### Feature preservation requirements
+
+The official TizenTube Cobalt project description lists ad blocking, SponsorBlock, video speed control, and DeArrow. MyTube's product requirements additionally preserve the existing YouTube TV interface and every playback/quality capability available in the known-good TizenTube Cobalt build. These are compatibility requirements, not a claim that every feature has already been tested in MyTube.
+
+| Capability | Required MyTube behavior | Current evidence |
+|---|---|---|
+| YouTube TV interface/navigation | Keep the current interface unchanged | No interface files appear in the current branch diff; runtime not tested |
+| Core playback pipeline | Preserve stream selection, audio/video playback, seeking and buffering | No media pipeline files appear in the current branch diff; runtime not tested |
+| Resolution / quality | Preserve the quality menu and all quality options that work in the known-good baseline | Runtime baseline and comparison not yet captured |
+| Adaptive quality | Preserve existing automatic quality behavior | Runtime not tested |
+| Playback speed | Preserve current speed controls | Feature is listed in the MyTube README; runtime not tested |
+| SponsorBlock | Preserve segment lookup, progress markers and configured skip behavior | Feature is listed in the MyTube README; runtime not tested |
+| Ad filtering/skipping | Preserve the current behavior without disabling unrelated playback | Feature is listed in the MyTube README; runtime not tested |
+| DeArrow | Preserve existing title/thumbnail behavior | Feature is listed in the MyTube README; runtime not tested |
+| Auto frame rate / PiP | Preserve where supported by the current platform build | Native bridge implementation exists; device runtime not tested |
+
+### Licence observation
+
+The current repository root `LICENSE` is the Chromium Authors' BSD-style redistribution notice. The upstream TizenTube Cobalt repository's root `LICENSE` returned the same Chromium Authors notice in this comparison. This root file is **not a complete licence grant for every file in the repository**: Apache-2.0, BSD, MIT and other component-specific notices may apply in individual directories or third-party packages. Preserve all per-file and third-party notices and generate a full shipped third-party notice bundle before release.
+
+### Safety decision
+
+No playback, SponsorBlock, ad-filtering, DeArrow, YouTube TV UI, or media-engine source files were changed in this step. Do not delete or rename the legacy H5VCC interface merely to remove the string `tizentube`: the current MyTube C++ adapter still implements that interface, and its web-side caller contract has not yet been proven replaceable. The next implementation step must trace the caller and add compatibility tests before migrating the Mojo interface.
+
+**Build/runtime status remains NOT VERIFIED.** No GN generation, C++/Java compilation, APK packaging, TV playback session, quality-selection test, SponsorBlock test, or ad-filter regression test was run in this review.
