@@ -523,3 +523,14 @@ The Android resource review also confirmed that the shell manifest declares a Fi
 These corrections were made by source inspection only. No GN generation, Java compilation, C++ compilation, APK packaging, emulator/device test, or YouTube TV playback regression test has been run. The branch therefore remains **not build-verified**. A full file-by-file provenance audit is also not complete: the root recursive tree response is truncated and the third-party tree contains hundreds of packages.
 
 The retained Mojo compatibility interface must not be deleted or renamed until the actual web-client consumer and all generated bindings are traced. The app must not be represented as fully TizenTube-independent, fully MyTube-owned, or release-ready until the outstanding build, runtime, licence and release-pipeline gates pass.
+
+## MyTube launcher and Android TV banner cleanup — 2026-11-16
+
+The shell manifest no longer points at the inherited Cobalt launcher icon or TizenTube-branded banner. New MyTube-authored vector resources were added:
+
+- `cobalt/shell/android/java/res/drawable/mytube_icon.xml`
+- `cobalt/shell/android/java/res/drawable/mytube_banner.xml`
+
+The resource target `cobalt/shell/android/BUILD.gn` includes both files, and `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` references them. All five old density-specific `app_banner.png` assets containing TizenTube branding were deleted and removed from the GN resource list. The app label remains MyTube and the package configured by `cobalt/android/BUILD.gn` remains `com.luffy.mytube`. The YouTube TV start URL and splash screen were intentionally not changed.
+
+This confirms source/resource wiring only. The actual packaged APK, TV launcher rendering, and production release target have not been verified.
