@@ -1,8 +1,6 @@
 name: Autoroll Main
 
 on:
-  schedule:
-#    - cron: '0 * * * *' # Hourly.
   workflow_dispatch:
     inputs:
       max_commits:
