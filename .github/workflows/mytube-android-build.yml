@@ -30,7 +30,8 @@ jobs:
     with:
       platform: mytube-android-arm
       nightly: "false"
-    secrets: inherit
+    secrets:
+      datadog_api_key: ${{ secrets.DD_API_KEY }}
 
   arm64:
     name: Build MyTube ARM64 TV APK
@@ -41,4 +42,5 @@ jobs:
     with:
       platform: mytube-android-arm64
       nightly: "false"
-    secrets: inherit
+    secrets:
+      datadog_api_key: ${{ secrets.DD_API_KEY }}
