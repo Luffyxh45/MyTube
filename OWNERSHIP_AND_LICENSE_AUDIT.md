@@ -267,3 +267,23 @@ The inspected TizenTube-specific implementation is present as source code inside
 No Cobalt/Android build, runtime test, generated Mojo compilation, production APK inspection, signed release, complete TizenTube text search across the non-truncated repository, full Java call-graph review, or complete file-by-file licence scan was performed in this review. No inherited source headers or implementation files were modified in this pass.
 
 **Next safe engineering step:** trace the full Java/native/browser interface contract and identify the actual supported production target. Only then implement a MyTube-owned replacement behind a compatibility boundary and validate it with a build and runtime tests before removing the inherited module.
+
+
+## Independence execution log — 2026-11-16
+
+**Current branch revision:** `bfe769e15b9ee1cc99c9edc8107849ad4c0854b9`
+
+The project owner approved the goal of full independence from TizenTube and its owner, including a longer-term ambition to reduce or remove dependence on the inherited Cobalt engine.
+
+### Safe changes committed
+
+- Added `MYTUBE_INDEPENDENCE_PLAN.md`, defining operational, code-provenance, and longer-term engine independence as separate goals, with build/test gates before removing inherited code.
+- Added a link to that plan in `README.md`.
+
+### Implementation status
+
+No inherited Cobalt, Chromium, Starboard, TizenTube-derived implementation, copyright header, or licence file was deleted or relicensed in this step. This is intentional: the TizenTube-specific H5VCC API is wired into the Cobalt browser build and Android bridge, and its complete consumer contract has not yet been traced. Removing it before that trace and a successful replacement build could break the app.
+
+The next implementation task remains a complete call-graph review of the H5VCC API from the web application through Mojo, C++, JNI, and Java, followed by a MyTube-owned compatible implementation and build/runtime tests.
+
+The full file-by-file audit, production build verification, and proof of a TizenTube-independent release remain incomplete. Do not describe MyTube as fully independent or the repository as wholly MyTube-owned until the release gates in `MYTUBE_INDEPENDENCE_PLAN.md` are met.
