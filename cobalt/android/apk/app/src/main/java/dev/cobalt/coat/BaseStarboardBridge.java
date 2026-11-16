@@ -1075,7 +1075,7 @@ public class BaseStarboardBridge {
     MyTubePlatformApi.showAlertDialog(mActivityHolder.get(), title, message);
   }
 
-  /** A wrapper of the android.util.Size class to be used by JNI. */  /** A wrapper of the android.util.Size class to be used by JNI. */
+  /** A wrapper of the android.util.Size class to be used by JNI. */
   public static class Size {
     private final int mWidth;
     private final int mHeight;
