@@ -164,3 +164,15 @@ The unused legacy C++ implementation was removed from the active branch:
 A further static build-file review found that `MyTubePlatformApi.java` was not listed in the `cobalt_main_java` GN source list. It has now been added. The same review found a misspelled Android frame-rate preference constant and an unnecessary dependency on `CobaltActivity`, which is not part of every Starboard Android source configuration. The helper now uses the shared active `VideoSurfaceView` surface directly and uses the correctly named Android preference constant.
 
 These are source-level corrections only. The repository has not been compiled in this session; GN generation, C++/Java compilation, APK packaging and target-device tests remain unverified. The complete licence inventory and production release pipeline also remain outstanding.
+
+## Android TV branding implementation — 2026-11-16
+
+The Cobalt shell Android manifest now references new MyTube-owned vector resources:
+
+- `cobalt/shell/android/java/res/drawable/mytube_icon.xml` — red play-button app mark.
+- `cobalt/shell/android/java/res/drawable/mytube_banner.xml` — MyTube Android TV banner graphic.
+- `cobalt/shell/android/BUILD.gn` includes both vector resources.
+- `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` references the new resources for the app icon and Android TV banner.
+- The five density-specific inherited TizenTube `app_banner.png` files have been removed from the resource tree and their GN source list.
+
+The existing YouTube TV start URL and splash-screen branding were left unchanged as requested. This is a resource/source-level change; the built APK and launcher rendering have not yet been verified on a TV device.
