@@ -1,8 +1,8 @@
 # MyTube Independence Plan
 
-**Project:** MyTube by Luffy  
-**Repository:** `Luffyxh45/MyTube`  
-**Working branch:** `mytube-branding`  
+**Project:** MyTube by Luffy
+**Repository:** `Luffyxh45/MyTube`
+**Working branch:** `mytube-branding`
 **Status:** Independence work in progress — not yet a standalone engine or a complete licence audit.
 
 ## Goal
