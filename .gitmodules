@@ -38,10 +38,6 @@
 [submodule "chrome/test/data/xr/webvr_info"]
 	path = chrome/test/data/xr/webvr_info
 	url = https://chromium.googlesource.com/external/github.com/toji/webvr.info
-[submodule "clank"]
-	path = clank
-	url = https://chrome-internal.googlesource.com/clank/internal/apps
-	gclient-condition = checkout_android and checkout_src_internal
 [submodule "cobalt/internal"]
 	path = cobalt/internal
 	url = https://lbshell-internal.googlesource.com/cobalt/internal
@@ -116,10 +112,6 @@
 [submodule "media/cdm/api"]
 	path = media/cdm/api
 	url = https://chromium.googlesource.com/chromium/cdm
-[submodule "native_client"]
-	path = native_client
-	url = https://chromium.googlesource.com/native_client/src/native_client
-	gclient-condition = checkout_nacl
 [submodule "testing/libfuzzer/fuzzers/wasm_corpus"]
 	path = testing/libfuzzer/fuzzers/wasm_corpus
 	url = https://chromium.googlesource.com/v8/fuzzer_wasm_corpus
@@ -629,10 +621,6 @@
 [submodule "third_party/zstd/src"]
 	path = third_party/zstd/src
 	url = https://chromium.googlesource.com/external/github.com/facebook/zstd
-[submodule "internal"]
-	path = internal
-	url = https://chrome-internal.googlesource.com/chrome/src-internal
-	gclient-condition = checkout_src_internal or checkout_src_internal_infra
 [submodule "third_party/android_prebuilts/build_tools"]
 	path = third_party/android_prebuilts/build_tools
 	url = https://android.googlesource.com/platform/prebuilts/build-tools
@@ -817,10 +805,6 @@
 	path = google_apis/internal
 	url = https://chrome-internal.googlesource.com/chrome/google_apis/internal
 	gclient-condition = checkout_src_internal
-[submodule "ios_internal"]
-	path = ios_internal
-	url = https://chrome-internal.googlesource.com/chrome/ios_internal
-	gclient-condition = checkout_ios and checkout_src_internal
 [submodule "remoting/host/installer/linux/internal"]
 	path = remoting/host/installer/linux/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/host/installer/linux/internal
@@ -837,10 +821,6 @@
 	path = remoting/tools/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/tools/internal
 	gclient-condition = checkout_src_internal
-[submodule "signing_keys"]
-	path = signing_keys
-	url = https://chrome-internal.googlesource.com/clank/apptestkey
-	gclient-condition = checkout_android and checkout_google_internal and checkout_src_internal
 [submodule "skia/tools/clusterfuzz-data"]
 	path = skia/tools/clusterfuzz-data
 	url = https://chrome-internal.googlesource.com/chrome/tools/clusterfuzz-data
