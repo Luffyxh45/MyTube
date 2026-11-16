@@ -41,11 +41,12 @@ jobs:
           fetch-depth: 1
 
       - name: Install Chromium host and Android build dependencies
+        working-directory: cobalt/src
         shell: bash
         run: |
           set -euxo pipefail
-          # Use the dependency installer maintained by this exact Chromium
-          # checkout instead of adding missing packages one at a time.
+          # Use the dependency installer from the checked-out Chromium/Cobalt source.
+          test -f build/install-build-deps.py
           sudo python3 build/install-build-deps.py --android --no-prompt
           # Android builds on x86_64 also require the 32-bit host libraries.
           dpkg --print-foreign-architectures | grep -Fx i386
