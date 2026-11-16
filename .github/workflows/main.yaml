@@ -567,6 +567,24 @@ jobs:
           enable_sccache: ${{ needs.initialize.outputs.enable_sccache == 'true' }}
           sccache_gcs_key: ${{ secrets.sccache_gcs_key }}
 
+      - name: Verify MyTube Android TV APK
+        if: ${{ github.repository == 'Luffyxh45/MyTube' && github.ref == 'refs/heads/mytube-branding' && startsWith(matrix.platform, 'android-') && matrix.config == 'gold' }}
+        shell: bash
+        run: |
+          apk_path="cobalt/src/out/${{ matrix.platform }}_${{ matrix.config }}/apks/MyTube.apk"
+          test -s "${apk_path}"
+          sha256sum "${apk_path}"
+          file "${apk_path}"
+
+      - name: Upload MyTube Android TV APK
+        if: ${{ github.repository == 'Luffyxh45/MyTube' && github.ref == 'refs/heads/mytube-branding' && startsWith(matrix.platform, 'android-') && matrix.config == 'gold' }}
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: MyTube-${{ matrix.platform }}-gold
+          path: cobalt/src/out/${{ matrix.platform }}_${{ matrix.config }}/apks/MyTube.apk
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Release Package
         if:  (matrix.config == 'qa' || matrix.config == 'gold') && (needs.initialize.outputs.test_package == 'true' || needs.initialize.outputs.test_e2e == 'true' || needs.initialize.outputs.test_yts == 'true')
         uses: ./.github/actions/package
