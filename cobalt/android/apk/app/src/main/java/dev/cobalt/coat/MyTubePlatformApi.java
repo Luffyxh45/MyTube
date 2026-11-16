@@ -20,6 +20,7 @@ import android.provider.Settings;
 import android.util.Rational;
 import android.view.Display;
 import android.view.Surface;
+import dev.cobalt.media.VideoSurfaceView;
 import androidx.core.content.FileProvider;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -241,7 +242,7 @@ final class MyTubePlatformApi {
       if (preference == DisplayManager.MATCH_CONTENT_FRAMERATE_NEVER) {
         return;
       }
-      if (preference == DisplayManager.MATCH_CONTENT_FRAMERATE_SEAMLESSS_ONLY) {
+      if (preference == DisplayManager.MATCH_CONTENT_FRAMERATE_SEAMLESS_ONLY) {
         if (!seamless) {
           return;
         }
@@ -249,9 +250,18 @@ final class MyTubePlatformApi {
       }
     }
 
-    if (activity instanceof CobaltActivity) {
-      ((CobaltActivity) activity).setFrameRate(
-          frameRate, Build.VERSION.SDK_INT == 30 ? 0 : strategy);
+    // Use the active video Surface directly so this platform helper does not
+    // depend on the non-Starboard CobaltActivity implementation.
+    Surface videoSurface = VideoSurfaceView.getCurrentSurface();
+    if (videoSurface == null) {
+      return;
+    }
+    if (Build.VERSION.SDK_INT == 30) {
+      videoSurface.setFrameRate(
+          frameRate, Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE);
+    } else {
+      videoSurface.setFrameRate(
+          frameRate, Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE, strategy);
     }
   }
 
