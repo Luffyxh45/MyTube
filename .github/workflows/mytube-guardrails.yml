@@ -4,10 +4,14 @@ on:
   push:
     branches: [mytube-branding]
   pull_request:
-    branches: [mytube-branding]
+    branches: [main]
 
 permissions:
   contents: read
+
+concurrency:
+  group: mytube-guardrails-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   static-guardrails:
