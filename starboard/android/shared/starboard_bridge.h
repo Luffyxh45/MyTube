@@ -109,7 +109,7 @@ class StarboardBridge {
 
   void HideSplashScreen(JNIEnv* env) const;
 
-  // TizenTube Cobalt APIs
+  // MyTube platform operations used by the legacy H5VCC adapter
   bool InstallAppFromURL(JNIEnv* env, const char* url) const;
   std::string GetVersion(JNIEnv* env) const;
   std::string GetArchitecture(JNIEnv* env) const;
