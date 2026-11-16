@@ -1,8 +1,8 @@
 # MyTube Independence Roadmap
 
-**Repository:** `Luffyxh45/MyTube`  
-**Working branch:** `mytube-branding`  
-**Status checked:** 2026-11-16  
+**Repository:** `Luffyxh45/MyTube`
+**Working branch:** `mytube-branding`
+**Status checked:** 2026-11-16
 **Purpose:** Make MyTube independently maintainable and releasable without relying on TizenTube or its owner, while preserving all applicable upstream licences.
 
 ## Independence goal
