@@ -322,3 +322,37 @@ The inspected Java `installAppFromURL` method downloads the supplied URL to a fi
 This inspection confirms the native/Java path, but it does **not** establish which methods the YouTube TV web application actually calls, whether every operation is required on the supported production device, or whether the Mojo interface is consumed through a web-facing compatibility binding elsewhere. A full search of all tracked source and generated bindings, plus a runtime trace on the actual target, is still required before changing the interface name or deleting the old module.
 
 **Next safe action:** implement a MyTube-maintained backend behind a compatibility boundary, first verifying the web-facing contract. Preserve existing behavior only where required, and add explicit validation/error reporting for app installation.
+
+
+## MyTube backend extraction — 2026-11-16
+
+**Branch revision after this step:** `d4589422e3a31cde774af427685d8c52fb77f2da`
+
+### Changes committed on `mytube-branding`
+
+- Added `cobalt/android/apk/app/src/main/java/dev/cobalt/coat/MyTubePlatformApi.java` as a new MyTube-maintained Android platform backend, with its own Apache-2.0 header. It implements package-version lookup, device name/model, CPU ABI, frame-rate requests, picture-in-picture, feature checks, alert dialogs, and APK installation.
+- Updated `BaseStarboardBridge.java` so its existing JNI-called methods delegate to the new MyTube backend. The JNI method names remain stable to avoid breaking generated JNI bindings.
+- Added `cobalt/browser/mytube_platform_api/BUILD.gn`, `mytube_platform_api_impl.h`, and `mytube_platform_api_impl.cc`. This is a new MyTube-owned C++ `DocumentService` implementation of the existing H5VCC Mojo contract.
+- Updated `cobalt/browser/BUILD.gn` to depend on the new MyTube target instead of the old `h5vcc_tizentube` implementation target.
+- Updated `cobalt_browser_interface_binders.cc` to register `mytube::PlatformApiImpl` while preserving the existing Mojo interface type.
+- Updated the comments in `starboard_bridge.h` and `base_starboard_bridge.cc` to describe the bridge as MyTube platform operations.
+
+### Compatibility and licensing status
+
+The old `h5vcc_tizentube` Mojo interface remains in use as a compatibility contract. The old implementation files remain in the repository but are no longer the implementation registered by the main Cobalt browser target. This is deliberate until a supported build and the YouTube TV consumer contract have been verified.
+
+The new Java and C++ backend files are MyTube-authored in this change. Existing Chromium, Cobalt, Starboard, and third-party source headers/licences have not been overwritten. The retained legacy Mojo contract and other inherited source still require their original attribution and licence treatment.
+
+### APK installer hardening
+
+The new backend rejects non-HTTPS URLs and redirects away from HTTPS, sets connection/read timeouts, limits downloads to 100 MiB, checks the downloaded archive contains `AndroidManifest.xml`, requests Android's unknown-app install permission when required, and opens the system package installer for user confirmation. It logs failures rather than silently ignoring them.
+
+### Verification limitations
+
+- Static inspection confirms the browser build dependency and binder now point to `mytube::PlatformApiImpl`.
+- The new Java backend and C++ service have **not** been compiled.
+- GN generation, APK packaging, Android device runtime tests, JNI generation checks, and YouTube TV compatibility tests have **not** been run.
+- The old TizenTube-named Mojo contract and unreferenced old implementation files have **not** been deleted.
+- This step removes the old implementation from the main browser registration path; it does **not** certify complete TizenTube independence, complete file-level ownership, or full Cobalt/Chromium engine independence.
+
+**Next gate:** run the supported Android/Cobalt GN build and device tests, verify every H5VCC method against the actual YouTube TV consumer, then remove the legacy implementation files and rename or retire the compatibility Mojo contract only if the consumer permits it.
