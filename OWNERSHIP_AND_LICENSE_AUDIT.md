@@ -534,3 +534,14 @@ The shell manifest no longer points at the inherited Cobalt launcher icon or Tiz
 The resource target `cobalt/shell/android/BUILD.gn` includes both files, and `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` references them. All five old density-specific `app_banner.png` assets containing TizenTube branding were deleted and removed from the GN resource list. The app label remains MyTube and the package configured by `cobalt/android/BUILD.gn` remains `com.luffy.mytube`. The YouTube TV start URL and splash screen were intentionally not changed.
 
 This confirms source/resource wiring only. The actual packaged APK, TV launcher rendering, and production release target have not been verified.
+
+## Scoped TizenTube-reference scan — 2026-11-16
+
+A complete recursive tree scan of the `cobalt/` subtree returned 2,044 entries without truncation. The only remaining paths containing the TizenTube interface name are:
+
+- `cobalt/browser/h5vcc_tizentube/public/mojom/BUILD.gn`
+- `cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom`
+
+The old native implementation target and implementation source/header are absent. The root `.gitmodules`, root `DEPS`, and `README.md` were also inspected for TizenTube-name references and returned no matches. This is a scoped source/path check, not a complete content scan of every file in the 500k+ entry Chromium-derived repository.
+
+The remaining Mojom contract is intentionally retained for compatibility with the external YouTube TV client. MyTube's C++ adapter is the implementation currently registered by the browser binder. Do not remove this contract until the web-side consumer has been traced and a compatible replacement has been tested.
