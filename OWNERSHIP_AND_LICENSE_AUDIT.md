@@ -227,3 +227,43 @@ These are the known upstream identities found in the inherited funding/reviewer 
 
 - `README.md` now says **Project maintainer: MyTube by Luffy** rather than using an unqualified “Author” label, avoiding an implication that the entire inherited engine was written by MyTube.
 - `.github/workflows/autoroll_main.yaml` had an empty `schedule:` block (the cron line was already commented out). That block has been removed; the workflow is now explicitly `workflow_dispatch` only. The recent history showed 17 failed push-event runs for this workflow, and the Actions jobs endpoint returned zero jobs for the latest inspected run. After this trigger cleanup, the latest Actions-run query showed no new push-triggered run for the cleanup commit. This is not a full workflow test; the manual autoroll was not dispatched because it uses the `CHERRY_PICK_TOKEN` secret and can push branches / create pull requests.
+
+
+## Independence review — 2026-11-16
+
+**Reviewed branch revision:** `916894ee549fe08c27cd2e0f96bf73b76ac66f5d`  
+**Branch comparison:** `mytube-branding` is 22 commits ahead of `main`, 0 behind.  
+**Scope:** targeted review of the TizenTube-derived native API and project-control metadata; this is not a full repository scan.
+
+### New verified findings
+
+| Path | Finding | Treatment |
+|---|---|---|
+| `cobalt/browser/h5vcc_tizentube/BUILD.gn` | Defines a compiled `h5vcc_tizentube` source set. | Still part of the native source/build graph; do not delete before replacement and tests. |
+| `cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom` | Defines the `H5vccTizentube` Mojo contract: install from URL, version, architecture, brand/model, frame rate and user-agent override. | The interface name may be part of the YouTube TV compatibility contract. Preserve a compatibility adapter until the consumer contract is verified. |
+| `cobalt/browser/BUILD.gn` | Includes dependencies on the TizenTube H5VCC implementation and Mojo target. | Confirms the module is included in the browser target dependency graph. |
+| `cobalt/browser/cobalt_browser_interface_binders.cc` | Includes the implementation and registers `h5vcc_tizentube::mojom::H5vccTizentube` with the browser interface binder. | Confirms the interface is actively wired into the browser, not just an unused folder. |
+| `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.cc/.h` | Files inspected with Reis Can 2026 copyright and Apache-2.0 headers. The implementation delegates Android calls to `StarboardBridge`. | Preserve attribution/licence for these inherited files unless replaced by genuinely independent code. |
+| `starboard/android/shared/starboard_bridge.h` and `base_starboard_bridge.cc` | Contain a section explicitly labelled “TizenTube Cobalt APIs” and bridge methods for app install, version, architecture, brand/model and frame-rate control. | TizenTube-derived integration is not isolated to the H5VCC folder; a complete removal needs a call-graph and Java bridge replacement. |
+| `cobalt/android/apk/app/src/main/java/dev/cobalt/coat/BaseStarboardBridge.java` | Contains the Java-side implementations for app install from URL, version, device brand/model, architecture and frame-rate operations. | These methods must be reviewed and replaced or re-authored before claiming the native integration no longer depends on TizenTube-derived code. |
+
+### Important distinction
+
+The inspected TizenTube-specific implementation is present as source code inside this MyTube repository. The inspected call chain does not by itself demonstrate a runtime request to the TizenTube owner's server or a requirement for that owner to approve builds. It does demonstrate that MyTube currently includes and builds a TizenTube-derived native API implementation. Therefore:
+
+- **Operational independence** may be achievable while retaining properly licensed code already present in this fork, provided MyTube can maintain and build it without external owner infrastructure.
+- **Code-provenance independence** requires replacing TizenTube-authored modules with independently implemented code and preserving any required compatibility contract.
+- **Licence independence** cannot be obtained by renaming files or changing copyright headers. The Apache-2.0 terms and original notices continue to apply to retained derivative code.
+
+### Changes already present on this branch, rechecked
+
+- The three TizenTube-named GitHub banner assets and `.github/FUNDING.yml` are absent from the branch diff against `main` (they are recorded as removed).
+- The CoAT development-shell label is MyTube and its generated package value is `com.luffy.mytube`; production Kimono identity remains unverified.
+- The `.github/workflows/autoroll_main.yaml` schedule block was removed, leaving the workflow manually dispatchable. It was not manually run during this review.
+- The root-level gitlinks listed in the prior supplemental audit are removed, but many conditional third-party and platform submodule declarations remain.
+
+### Verification not performed
+
+No Cobalt/Android build, runtime test, generated Mojo compilation, production APK inspection, signed release, complete TizenTube text search across the non-truncated repository, full Java call-graph review, or complete file-by-file licence scan was performed in this review. No inherited source headers or implementation files were modified in this pass.
+
+**Next safe engineering step:** trace the full Java/native/browser interface contract and identify the actual supported production target. Only then implement a MyTube-owned replacement behind a compatibility boundary and validate it with a build and runtime tests before removing the inherited module.
