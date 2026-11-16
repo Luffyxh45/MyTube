@@ -20,7 +20,7 @@ concurrency:
 jobs:
   build:
     name: Build MyTube ${{ matrix.platform }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 360
     strategy:
       fail-fast: false
@@ -101,7 +101,9 @@ jobs:
           command -v python3
           command -v gn
           command -v autoninja
-          sdkmanager --list_installed || true
+          # Chromium's Android SDK/NDK are provisioned by gclient sync below.
+          test -d cobalt/src/third_party/android_sdk/public
+          test -d cobalt/src/third_party/android_toolchain/ndk
 
       - name: Configure MyTube Android build
         working-directory: cobalt/src
