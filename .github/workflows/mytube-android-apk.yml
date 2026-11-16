@@ -91,6 +91,20 @@ jobs:
           echo "${tools_dir}" >> "${GITHUB_PATH}"
           echo "DEPOT_TOOLS_DIR=${tools_dir}" >> "${GITHUB_ENV}"
 
+      - name: Bootstrap depot_tools Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -x "${DEPOT_TOOLS_DIR}/ensure_bootstrap" ]; then
+            "${DEPOT_TOOLS_DIR}/ensure_bootstrap"
+          else
+            echo "::error::depot_tools ensure_bootstrap script is missing."
+            exit 1
+          fi
+          test -s "${DEPOT_TOOLS_DIR}/python3_bin_reldir.txt"
+          echo "depot_tools Python bootstrap completed:"
+          cat "${DEPOT_TOOLS_DIR}/python3_bin_reldir.txt"
+
       - name: Verify GN and Ninja tooling
         shell: bash
         run: |
