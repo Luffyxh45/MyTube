@@ -1,0 +1,101 @@
+name: MyTube baseline Android APKs
+
+on:
+  push:
+    branches:
+      - mytube-baseline-branding
+    paths:
+      - "cobalt/android/**"
+      - "cobalt/shell/android/**"
+      - ".github/workflows/mytube-baseline-android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mytube-baseline-apks-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build MyTube ${{ matrix.platform }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        platform: [android-arm, android-arm64]
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      DEPOT_TOOLS_UPDATE: "0"
+      DEPOT_TOOLS_REPORT_BUILD: "0"
+      DEPOT_TOOLS_COLLECT_METRICS: "0"
+      DEPOT_TOOLS_METRICS: "0"
+    steps:
+      - name: Check out MyTube source
+        uses: actions/checkout@v4
+        with:
+          path: cobalt/src
+          fetch-depth: 1
+
+      - name: Install depot_tools
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git cobalt/depot_tools
+          echo "${GITHUB_WORKSPACE}/cobalt/depot_tools" >> "${GITHUB_PATH}"
+          echo "DEPOT_TOOLS_DIR=${GITHUB_WORKSPACE}/cobalt/depot_tools" >> "${GITHUB_ENV}"
+
+      - name: Configure gclient and sync dependencies
+        working-directory: cobalt
+        shell: bash
+        run: |
+          set -euxo pipefail
+          gclient config --name=src "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          gclient sync --verbose --shallow --no-history --nohooks --force --revision "${GITHUB_SHA}"
+          gclient runhooks --verbose
+
+      - name: Check Android toolchain and runner capacity
+        shell: bash
+        run: |
+          set -euxo pipefail
+          df -h
+          free -h
+          test -n "${ANDROID_HOME:-}"
+          command -v java
+          java -version
+          command -v python3
+          command -v gn
+          command -v autoninja
+          sdkmanager --list_installed || true
+
+      - name: Configure MyTube Android build
+        working-directory: cobalt/src
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 cobalt/build/gn.py -p "${PLATFORM}" -c gold --no-rbe
+
+      - name: Build MyTube APK
+        working-directory: cobalt/src
+        shell: bash
+        run: |
+          set -euxo pipefail
+          autoninja -C "out/${PLATFORM}_gold" cobalt_apk
+          apk="$(find "out/${PLATFORM}_gold" -type f -path "*/apks/MyTube.apk" -print -quit)"
+          test -n "${apk}"
+          mkdir -p dist
+          cp "${apk}" "dist/MyTube-${PLATFORM}.apk"
+          sha256sum "dist/MyTube-${PLATFORM}.apk" | tee "dist/SHA256SUMS-${PLATFORM}.txt"
+          unzip -t "dist/MyTube-${PLATFORM}.apk"
+
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MyTube-${{ matrix.platform }}-APK
+          path: cobalt/src/dist/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 90
