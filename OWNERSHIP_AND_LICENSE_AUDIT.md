@@ -463,3 +463,37 @@ The MyTube GN target includes the new service files. This separates MyTube's int
 Source inspection confirms the service header has no Mojo/TizenTube include, the service implementation delegates Android operations through the existing Starboard bridge, and the adapter delegates to the new service. The GN target lists both new files.
 
 **Not verified:** GN generation, C++ compilation, Android Java compilation, APK packaging, or runtime behavior. Do not remove the legacy Mojom contract until a compatible web-side interface migration is separately proven. No claim is made that the app has built successfully.
+
+## Removal of unused legacy native implementation — 2026-11-16
+
+**Branch:** `mytube-branding`
+
+### Changes committed
+
+Removed these unused legacy TizenTube implementation files:
+
+- `cobalt/browser/h5vcc_tizentube/BUILD.gn`
+- `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.h`
+- `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.cc`
+
+The root Cobalt browser target had already been switched to `//cobalt/browser/mytube_platform_api`; it did not compile the old `h5vcc_tizentube` implementation target. The obsolete target and implementation source therefore duplicated an inactive implementation and were removed. Their historical commits remain in Git history; no attempt was made to rewrite upstream attribution or claim the deleted inherited code as MyTube-authored.
+
+### Compatibility deliberately retained
+
+The following inherited interface remains:
+
+- `cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom`
+- `cobalt/browser/h5vcc_tizentube/public/mojom/BUILD.gn`
+
+The current YouTube TV web-facing contract is still registered in `cobalt_browser_interface_binders.cc`, but it is now bound to `mytube::PlatformApiImpl`. The Cobalt browser GN target depends on the public Mojom target only, not on the deleted TizenTube implementation target. Comments were added to the binder and GN dependency to make this compatibility boundary explicit.
+
+This preserves the existing web-facing interface while removing the unused legacy native implementation. It does **not** remove every TizenTube name or make the app fully independent of TizenTube's original web contract. A future interface rename requires proof of the web client contract and compatibility tests; do not rename the Mojom module merely to remove its name.
+
+### Verification and limits
+
+- The three file deletions and two explanatory source/build comments were committed to `mytube-branding`.
+- The source files and build target were inspected before deletion.
+- The browser target's active implementation dependency remains `//cobalt/browser/mytube_platform_api`.
+- No Cobalt GN generation, C++ build, Java build, APK packaging, emulator/device playback, quality selection, SponsorBlock, or ad-skipping regression test was run in this step.
+- The retained Mojom source remains third-party-derived and its original Apache-2.0 copyright header is unchanged.
+- This is a targeted cleanup, not a complete repository-wide ownership audit or proof of a TizenTube-independent release.
