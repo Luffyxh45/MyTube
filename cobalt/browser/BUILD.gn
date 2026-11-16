@@ -90,7 +90,7 @@ source_set("browser") {
     "//cobalt/browser/h5vcc_storage/public/mojom",
     "//cobalt/browser/h5vcc_system",
     "//cobalt/browser/h5vcc_system/public/mojom",
-    "//cobalt/browser/h5vcc_tizentube",
+    "//cobalt/browser/mytube_platform_api",
     "//cobalt/browser/h5vcc_tizentube/public/mojom",
     "//cobalt/browser/h5vcc_updater",
     "//cobalt/browser/h5vcc_updater/public/mojom",
