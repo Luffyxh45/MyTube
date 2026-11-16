@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: mytube-baseline-apks-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -111,6 +111,40 @@ jobs:
         run: |
           set -euxo pipefail
           python3 cobalt/build/gn.py -p "${PLATFORM}" -c gold --no-rbe
+
+      - name: Preflight Android resource manifest
+        working-directory: cobalt/src
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          build_file = Path("cobalt/shell/android/BUILD.gn")
+          text = build_file.read_text()
+          match = re.search(
+              r'android_resources\\("cobalt_shell_java_resources"\\)\\s*\\{.*?sources\\s*=\\s*\\[(.*?)\\]',
+              text, re.S)
+          if not match:
+              raise SystemExit("Could not locate cobalt_shell_java_resources sources list")
+          declared = set(re.findall(r'"([^"]+)"', match.group(1)))
+          root = Path("cobalt/shell/android/java/res")
+          actual = {p.relative_to("cobalt/shell/android").as_posix()
+                    for p in root.rglob("*") if p.is_file()}
+          declared_paths = {"java/res/" + p.removeprefix("java/res/") for p in declared}
+          missing = sorted(declared_paths - actual)
+          unlisted = sorted(actual - declared_paths)
+          print(f"Declared resources: {len(declared_paths)}; files present: {len(actual)}")
+          if missing or unlisted:
+              if missing:
+                  print("Declared but missing:")
+                  print("\\n".join(missing))
+              if unlisted:
+                  print("Present but not declared:")
+                  print("\\n".join(unlisted))
+              raise SystemExit("Android resource manifest preflight failed")
+          print("Android resource manifest preflight passed")
+          PY
 
       - name: Build MyTube APK
         working-directory: cobalt/src
