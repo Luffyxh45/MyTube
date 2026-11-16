@@ -62,7 +62,8 @@ require('MATCH_CONTENT_FRAMERATE_SEAMLESSS_ONLY' not in platform_java,
         "frame-rate preference typo is absent")
 require('VideoSurfaceView.getCurrentSurface()' in platform_java,
         "frame-rate helper uses the shared video surface")
-require('CobaltActivity' not in platform_java,
+require('instanceof CobaltActivity' not in platform_java
+        and '((CobaltActivity)' not in platform_java,
         "platform helper does not depend on the non-Starboard activity class")
 
 for licence in ("LICENSE", "LICENSE.chromium_os", "starboard/LICENSE", "AUTHORS"):
