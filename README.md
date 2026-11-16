@@ -27,6 +27,10 @@ Check the [latest MyTube releases](https://github.com/Luffyxh45/MyTube/releases)
 
 - [Report an issue or request a feature](https://github.com/Luffyxh45/MyTube/issues)
 
+## Project independence
+
+See the [MyTube Independence Plan](MYTUBE_INDEPENDENCE_PLAN.md) for the roadmap to a MyTube-maintained implementation, build process, and release pipeline.
+
 ## Credits and licensing
 
 MyTube is based on the Cobalt project and incorporates other open-source components. Their original copyright notices, licences, and required attributions remain applicable. See the repository's licence and third-party notices for details.
