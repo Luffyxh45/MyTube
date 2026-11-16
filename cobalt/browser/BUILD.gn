@@ -91,6 +91,7 @@ source_set("browser") {
     "//cobalt/browser/h5vcc_system",
     "//cobalt/browser/h5vcc_system/public/mojom",
     "//cobalt/browser/mytube_platform_api",
+    # Existing YouTube TV web-client compatibility contract; not the legacy implementation.
     "//cobalt/browser/h5vcc_tizentube/public/mojom",
     "//cobalt/browser/h5vcc_updater",
     "//cobalt/browser/h5vcc_updater/public/mojom",
