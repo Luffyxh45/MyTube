@@ -6,27 +6,25 @@ This repository uses Cobalt's Android CoAT build pipeline. The supported native 
 
 Workflow: [MyTube Android TV APK](../.github/workflows/mytube-android-apk.yml)
 
-The workflow is deliberately assigned to a **MyTube-controlled self-hosted Linux x64 runner**. A normal GitHub-hosted runner is not a safe assumption for this Chromium/Cobalt build: the source tree and Android toolchains require substantial disk space and memory. Provision a dedicated machine with:
+The workflow currently uses GitHub's standard hosted `ubuntu-latest` runner. No personal Linux computer, server, or self-hosted runner registration is required. It is configured to attempt both Android ABIs sequentially:
 
-- Linux x86_64 (Ubuntu is the expected environment).
-- At least 16 GB RAM; 32 GB is recommended.
-- At least 100 GB free disk space for checkout, toolchains, intermediates, and output.
-- Java, Python 3, Git, Make, unzip, zip, and the standard Cobalt/Chromium Android build dependencies.
-- Android build prerequisites installed using the repository's `build/install-build-deps.sh --android` where supported.
-- A persistent, trusted GitHub Actions self-hosted runner registered to this repository with labels: `self-hosted`, `linux`, `x64`, and `mytube-android-builder`.
+- `android-arm` — 32-bit ARM / `armeabi-v7a`.
+- `android-arm64` — 64-bit ARM / `arm64-v8a`.
 
-Register the runner from **Repository Settings → Actions → Runners → New self-hosted runner**. Follow GitHub's generated commands on the builder machine. Do not commit runner tokens, signing keys, or credentials. Run the runner under a dedicated unprivileged account; do not expose it to untrusted pull-request workflows.
+**Resource warning:** Cobalt/Chromium Android builds are unusually large. A standard GitHub-hosted runner has substantially less disk space and memory than the dedicated private runner used by some upstream projects. The workflow now warns when less than 80 GB is available, but deliberately continues so we can measure the actual failure point. Builds may fail from disk exhaustion, memory pressure, missing host dependencies, or the hosted job time limit. A failed attempt does not mean the source code itself is broken.
 
-The workflow installs Chromium `depot_tools` into the runner's temporary directory when `DEPOT_TOOLS_DIR` is not supplied. It configures each ABI with the repository's `cobalt/build/gn.py`, builds `cobalt_install`, verifies the APK ZIP and expected native ABI directory, calculates SHA-256, and uploads separate 30-day GitHub Actions artifacts.
+The workflow checks the available tools, installs Chromium `depot_tools` in the temporary runner directory, configures each ABI with `cobalt/build/gn.py`, builds `cobalt_install`, checks the APK archive and expected ABI directory, calculates SHA-256, and uploads separate 30-day artifacts when successful.
 
 ## Run a build
 
-After the runner is online, open **Actions → MyTube Android TV APK → Run workflow**. The workflow builds the 32-bit and 64-bit APKs sequentially on the registered builder.
+Open **Actions → MyTube Android TV APK → Run workflow** and select the `mytube-branding` branch. The workflow also runs automatically when relevant source, workflow, or build-documentation files are pushed to that branch.
 
-Expected artifacts:
+Expected artifacts if both builds complete:
 
 - `MyTube-android-arm-APK` — 32-bit ARM candidate.
 - `MyTube-android-arm64-APK` — 64-bit ARM candidate.
+
+If the hosted runner runs out of resources, the next step is a larger cloud VM or a dedicated self-hosted Linux machine. Merely changing a runner label to an upstream project's private label does not grant access to its machines.
 
 ## Release safety
 
