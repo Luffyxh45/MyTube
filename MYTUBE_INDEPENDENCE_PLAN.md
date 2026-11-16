@@ -140,12 +140,12 @@ A first MyTube-owned replacement layer has now been added without deleting the l
 - `BaseStarboardBridge.java` keeps its JNI entry-point names but delegates those operations to `MyTubePlatformApi`.
 - `cobalt/browser/mytube_platform_api/` contains a MyTube-owned C++ `DocumentService` implementation.
 - `cobalt/browser/BUILD.gn` and `cobalt_browser_interface_binders.cc` now build and register the MyTube implementation behind the existing H5VCC Mojo interface.
-- The legacy interface remains at `cobalt/browser/h5vcc_tizentube/public/mojom/` as a compatibility contract. The old TizenTube implementation source files are still present but are no longer the implementation registered by the browser target.
+- The legacy interface remains at `cobalt/browser/h5vcc_tizentube/public/mojom/` as a compatibility contract. At the time of this original extraction log, the old TizenTube implementation source files remained in the tree; they were subsequently deleted in the native cleanup documented below.
 - The native Starboard bridge comments now describe these as MyTube platform operations. Existing Chromium/Cobalt copyright and licence notices were not replaced.
 
 The APK installer implementation now accepts HTTPS URLs only, validates HTTPS redirects, applies connection/read timeouts and a 100 MiB size limit, checks that the downloaded ZIP contains `AndroidManifest.xml`, and routes installation through Android's user-confirmed package installer. It also reports failures to the Android log instead of silently swallowing them.
 
-**Not yet verified:** no GN generation, C++/Java build, APK packaging, device runtime test, or automated regression test has been run. The old Mojo interface and old source files must not be removed until the supported target builds and the YouTube TV consumer contract is verified.
+**Not yet verified:** no GN generation, C++/Java build, APK packaging, device runtime test, or automated regression test has been run. The retained Mojo compatibility interface must not be removed until the supported target builds and the YouTube TV consumer contract is verified.
 
 
 The follow-up Java cleanup removed imports made unused by the extraction. Static source checks confirm the main browser target and binder reference the MyTube implementation, while the legacy Mojo type remains intentionally in place. No compile or runtime test has yet been run.
