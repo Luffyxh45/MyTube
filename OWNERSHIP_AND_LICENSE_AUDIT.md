@@ -198,3 +198,13 @@ The Cobalt Android CoAT development-shell manifest now identifies as MyTube, and
 ### Correction: Android package scope
 
 The Android manifest template `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` contains comments stating that it is used only for the development shell (CoAT) and does not affect the production Kimono app. Accordingly, the package-ID and label commits recorded above are verified changes to that development-shell build path only. They must not be represented as a verified production MyTube APK package change. The production app packaging path and its manifest/package identifier still need to be located and tested.
+
+
+### Additional CoAT artwork finding
+
+The CoAT development-shell manifest references `@mipmap/ic_app` and `@drawable/app_banner`. Corresponding inherited resource files exist under:
+
+- `cobalt/shell/android/java/res/mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ic_app.png`
+- `cobalt/shell/android/java/res/drawable-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/app_banner.png`
+
+The repository also contains `cobalt/android/apk/app/src/app/assets/web/cobalt_logo_1024.png` and Cobalt-named iOS asset-catalog images. These binary assets were not edited in this pass; exact artwork provenance and whether each is shipped in a MyTube production build remain unverified. They must not be presented as MyTube-original artwork. The production app icon/banner path is still unlocated.
