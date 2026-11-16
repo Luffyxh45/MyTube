@@ -2,7 +2,7 @@
 
 **Repository:** `Luffyxh45/MyTube`  
 **Branch audited:** `mytube-branding`  
-**Audited revision:** `b4f1afe9c25a1276aa6842939b488a1003fb921f`  
+**Audited revision:** `21cb7394e83f75e2f49613ac511be339d2fbcab7` (2026-11-16)  
 **Status:** Initial repository-level audit — **not yet a complete file-by-file legal audit**.
 
 ## Important ownership conclusion
@@ -86,3 +86,65 @@ Do not call the repository or binary "fully owned by MyTube" and do not publish 
 - the supported build and packaging workflows pass.
 
 This document is an engineering audit record, not legal advice. Unclear provenance or licence compatibility should be reviewed by a qualified open-source licensing professional before distribution.
+
+
+## Supplemental verification — 2026-11-16
+
+This update records additional checks against the live `mytube-branding` branch at `21cb7394e83f75e2f49613ac511be339d2fbcab7`.
+
+### Repository inventory counts
+
+| Scope | Verified result | Meaning |
+|---|---:|---|
+| Full recursive Git tree response | 57,538 entries returned; 53,007 blobs, 4,522 trees and 9 gitlinks | GitHub marks this response **truncated**. It is not a complete file inventory. |
+| `third_party/` immediate child directories | 303 | These are dependency/project directories, not 303 files or 303 verified licences. |
+| `third_party/` immediate gitlink entries | 28 | These point to separate repositories/revisions and need their own provenance/licence review. |
+| Root `.gitmodules` | 1,060 lines; 69 occurrences of `chrome-internal.googlesource.com` | These include conditional internal/test/platform dependencies. They are not all necessarily checked out or shipped. Do not remove them wholesale. |
+
+### Additional files and dependency metadata inspected
+
+| Path | Evidence observed | Classification / action |
+|---|---|---|
+| `OWNERSHIP_AND_LICENSE_AUDIT.md` | Added by a commit authored by the repository owner, titled `docs: add initial MyTube ownership and license audit` | MYTUBE-ORIGINAL audit documentation; it records findings and limitations, not a legal certification. |
+| `third_party/abseil-cpp/README.chromium` | Abseil; Apache-2.0; `Shipped: yes`; upstream URL and revision recorded | THIRD-PARTY-DEPENDENCY; retain Apache-2.0 licence and required notices. |
+| `third_party/boringssl/README.chromium` | BoringSSL; MIT, BSD-3-Clause, OpenSSL, ISC and SSLeay; `Shipped: yes` | THIRD-PARTY-DEPENDENCY; multiple licence texts/conditions require package-specific review. |
+| `third_party/angle/README.chromium` | ANGLE; BSD-3-Clause; `Shipped: yes` | THIRD-PARTY-DEPENDENCY; preserve BSD notices. |
+| `third_party/zlib/README.chromium` | zlib 1.3.1; Zlib licence; `Shipped: yes` | THIRD-PARTY-DEPENDENCY; preserve zlib notice. |
+| `third_party/libvpx/README.chromium` | libvpx; BSD-3-Clause and Patent; `Shipped: yes` | THIRD-PARTY-DEPENDENCY; review both licence and patent terms/notices. |
+| `.github/assets/TizenTube Cobalt Banner.png` | Asset exists in the branch | ASSET-REVIEW-REQUIRED; source/creator and permission not verified. |
+| `.github/assets/TizenTube Download Latest Release Button.png` | Asset exists in the branch | ASSET-REVIEW-REQUIRED; source/creator and permission not verified. |
+| `.github/assets/TizenTube_Cobalt-Official_Banner.png` | Asset exists in the branch | ASSET-REVIEW-REQUIRED; source/creator and permission not verified. |
+
+### Important clarification about the existing cleanup
+
+The five root-level gitlinks previously removed (`clank`, `internal`, `ios_internal`, `native_client`, and `signing_keys`) are no longer the only upstream dependency references in this very large source tree. The `.gitmodules` file still contains many conditional upstream submodule declarations, including 69 private Google-source URL occurrences. These are build/dependency metadata, not evidence that MyTube owns the referenced repositories. Their relevance to MyTube's supported build must be established before any further removal.
+
+### File-level audit status
+
+The following is the **sample of individual files actually inspected in this pass**, not a claim that all 53,007 blobs have been read:
+
+- `LICENSE` — Chromium BSD-style licence and Chromium copyright notice.
+- `LICENSE.chromium_os` — ChromiumOS BSD-style licence and ChromiumOS copyright notice.
+- `AUTHORS` — upstream contributor list.
+- `README.md` — current MyTube project description and third-party acknowledgement.
+- `OWNERSHIP_AND_LICENSE_AUDIT.md` — owner-authored audit record.
+- `cobalt/CHANGELOG.md` — upstream Cobalt release history.
+- `starboard/LICENSE` — Apache License 2.0 text.
+- `starboard/README.md` — Starboard/Cobalt technical documentation.
+- `third_party/README.md` and `third_party/README.chromium.template` — upstream dependency inventory rules.
+- The five `README.chromium` files listed in the dependency table above.
+- `.gitmodules` — upstream submodule declarations and conditions.
+
+No full source-header scan, image metadata/provenance scan, binary asset review, full dependency licence scan, Android package/runtime identity audit, or supported-platform build was completed in this pass. A genuine file-by-file audit still requires a complete non-truncated file list and automated scanning (for example ScanCode/REUSE or an equivalent SCA tool), followed by manual review of ambiguous and shipped components.
+
+### Immediate next work
+
+1. Generate a complete file manifest by recursively splitting the tree into directory-level API requests until every directory is enumerated; retain the manifest as an audit artifact.
+2. Run copyright/SPDX/licence detection across all source and documentation files; map each finding to the exact path and evidence.
+3. Inventory all 303 `third_party/` package directories and 28 gitlinks, including nested dependencies, package metadata, upstream revision, shipped status, and full licence texts.
+4. Identify the actual Cobalt/Starboard targets used by MyTube and separate those from unrelated Chromium platform/test code before deciding what can be removed.
+5. Trace every TizenTube-branded asset/reference, verify image provenance, and replace only with original artwork or remove if genuinely unused.
+6. Inspect all files modified by MyTube commits against their upstream parent versions to distinguish original work from derivative changes.
+7. Verify generated third-party notices in the final Android/TV release and run the supported build/test workflows.
+
+**No inherited copyright or licence notice has been changed as part of this supplemental audit.** This update does not certify the repository or any binary as exclusively owned by MyTube.
