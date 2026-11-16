@@ -359,3 +359,31 @@ The new backend rejects non-HTTPS URLs and redirects away from HTTPS, sets conne
 
 
 A final static wiring check after the Java import cleanup confirmed: the browser GN target depends on `//cobalt/browser/mytube_platform_api` and no longer depends on the old `//cobalt/browser/h5vcc_tizentube` implementation target; the binder registers `mytube::PlatformApiImpl`; and the legacy `h5vcc_tizentube::mojom::H5vccTizentube` type is retained only as the compatibility contract in the active path. Build/runtime validation remains outstanding.
+
+## Follow-up implementation review — 2026-11-16
+
+The following files were re-opened on the current branch head after the initial audit:
+
+| File | Verified observation | Classification / action |
+|---|---|---|
+| `cobalt/browser/h5vcc_tizentube/public/mojom/h5vcc_tizentube.mojom` | Defines the web-facing `h5vcc_tizentube.mojom.H5vccTizentube` IPC contract and six methods. Header credits Reis Can and Apache-2.0. | **Inherited compatibility contract.** Do not delete or relicense until the YouTube TV web client contract is independently understood and compatibility tests exist. |
+| `cobalt/browser/h5vcc_tizentube/h5vcc_tizentube_impl.h` and `h5vcc_tizentube_impl.cc` | Original implementation files remain in the tree. The browser target no longer lists the implementation source, but the public Mojom target is still used. | **Inherited implementation retained but apparently not in the active browser target.** Confirm all references before deletion. Preserve original headers if retained. |
+| `cobalt/browser/mytube_platform_api/mytube_platform_api_impl.h/.cc` | New MyTube-named implementation is registered by the browser binder, but it still includes and implements the inherited `h5vcc_tizentube::mojom::H5vccTizentube` interface. | **MyTube-authored adapter using inherited protocol.** This is an intermediate compatibility layer, not yet a fully independent interface. |
+| `cobalt/browser/cobalt_browser_interface_binders.cc` | Includes the inherited TizenTube Mojom header and registers the new MyTube implementation against that interface. | **Remaining source-level TizenTube dependency.** Must remain until a compatible MyTube Mojom interface and migration plan are tested. |
+| `cobalt/browser/BUILD.gn` and `cobalt/browser/mytube_platform_api/BUILD.gn` | Browser target depends on the old public Mojom target and the new MyTube implementation target. | **Build dependency remains on inherited interface definition.** |
+| `cobalt/android/apk/app/src/main/java/dev/cobalt/coat/BaseStarboardBridge.java` | Added methods delegate to `MyTubePlatformApi` for install URL, version, device model, architecture, frame rate, PiP, system feature and alert dialog. | **MyTube implementation work.** The file itself is inherited Cobalt/Android code with existing upstream copyright; only the added modifications can be attributed to MyTube. |
+| `starboard/android/shared/starboard_bridge.h` and `base_starboard_bridge.cc` | Existing JNI bridge declarations/implementations still expose the calls used by the MyTube C++ adapter. | **Inherited Starboard bridge modified for MyTube integration.** Retain Cobalt/Starboard notices; isolate/remove these bridge calls only after proving they have no other consumers. |
+
+### Corrected status
+
+The earlier phrase “the old TizenTube implementation is no longer depended on” must be read narrowly: the old C++ implementation source is not listed in the active `cobalt/browser/BUILD.gn` target, but the inherited TizenTube-named Mojo interface and its build target are still required by the new adapter. Therefore **MyTube is not yet free of TizenTube-specific source/API naming**.
+
+No full build or runtime test was run as part of this follow-up review. The current state is a partial migration, not a verified removal of the TizenTube integration.
+
+### Next safe engineering gate
+
+1. Trace the JavaScript/web-side consumer of `h5vcc_tizentube.mojom.H5vccTizentube` and document exact method semantics.
+2. Add a MyTube-named Mojom interface with equivalent wire-level behavior only after confirming the binding exposure and compatibility requirements.
+3. Migrate binder registration and browser GN dependencies to the new interface.
+4. Build and test the target before removing the inherited Mojom and remaining implementation files.
+5. Keep the upstream licence/copyright header on the old files until they are deleted; do not overwrite it with MyTube authorship.
