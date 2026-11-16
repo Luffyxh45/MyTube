@@ -356,3 +356,6 @@ The new backend rejects non-HTTPS URLs and redirects away from HTTPS, sets conne
 - This step removes the old implementation from the main browser registration path; it does **not** certify complete TizenTube independence, complete file-level ownership, or full Cobalt/Chromium engine independence.
 
 **Next gate:** run the supported Android/Cobalt GN build and device tests, verify every H5VCC method against the actual YouTube TV consumer, then remove the legacy implementation files and rename or retire the compatibility Mojo contract only if the consumer permits it.
+
+
+A final static wiring check after the Java import cleanup confirmed: the browser GN target depends on `//cobalt/browser/mytube_platform_api` and no longer depends on the old `//cobalt/browser/h5vcc_tizentube` implementation target; the binder registers `mytube::PlatformApiImpl`; and the legacy `h5vcc_tizentube::mojom::H5vccTizentube` type is retained only as the compatibility contract in the active path. Build/runtime validation remains outstanding.
