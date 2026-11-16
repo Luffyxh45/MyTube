@@ -40,14 +40,23 @@ jobs:
           path: cobalt/src
           fetch-depth: 1
 
-      - name: Install Linux build dependencies
+      - name: Install Chromium host and Android build dependencies
         shell: bash
         run: |
           set -euxo pipefail
-          sudo apt-get update
-          sudo apt-get install --yes gperf
+          # Use the dependency installer maintained by this exact Chromium
+          # checkout instead of adding missing packages one at a time.
+          sudo python3 build/install-build-deps.py --android --no-prompt
+          # Android builds on x86_64 also require the 32-bit host libraries.
+          dpkg --print-foreign-architectures | grep -Fx i386
           command -v gperf
+          command -v bison
+          command -v flex
+          command -v pkg-config
           gperf --version
+          bison --version | head -n 1
+          flex --version
+          pkg-config --version
 
       - name: Install depot_tools
         shell: bash
