@@ -497,3 +497,29 @@ This preserves the existing web-facing interface while removing the unused legac
 - No Cobalt GN generation, C++ build, Java build, APK packaging, emulator/device playback, quality selection, SponsorBlock, or ad-skipping regression test was run in this step.
 - The retained Mojom source remains third-party-derived and its original Apache-2.0 copyright header is unchanged.
 - This is a targeted cleanup, not a complete repository-wide ownership audit or proof of a TizenTube-independent release.
+
+
+## Android build-wiring review and correction — 2026-11-16
+
+A static review of the current Android Java target found that the new MyTube helper file existed in the repository and was called from `BaseStarboardBridge.java`, but was missing from the explicit `sources` list for `cobalt_main_java` in `cobalt/android/BUILD.gn`. The missing source entry has now been added.
+
+The same review found two source-level issues in `MyTubePlatformApi.java` and corrected them:
+
+- Fixed the misspelled `DisplayManager.MATCH_CONTENT_FRAMERATE_SEAMLESS_ONLY` constant.
+- Removed the direct `CobaltActivity` type dependency from frame-rate handling. The helper now applies the frame rate to `VideoSurfaceView.getCurrentSurface()`, which is part of the common Java source list, rather than relying on a non-Starboard activity class.
+
+The Android resource review also confirmed that the shell manifest declares a FileProvider with the `<package>.fileprovider` authority and uses `@xml/file_paths`; the shared Cobalt shell resources provide `file_paths.xml` with access to app-private files. The Java target already depends on AndroidX Core, which supplies `FileProvider`.
+
+### Current native integration status
+
+- MyTube C++ adapter and platform service are active in the browser target.
+- MyTube Android helper is now included in the explicit Java source list.
+- The old TizenTube native implementation target and its two C++ source files have been deleted from the branch.
+- The public TizenTube-named Mojo contract remains, with its original Reis Can / Apache-2.0 notice, because the current browser binder still exposes it to the external web client.
+- The Android JNI bridge methods still use inherited Cobalt/Starboard bridge infrastructure; only the delegated platform behavior is MyTube-maintained.
+
+### Verification boundary
+
+These corrections were made by source inspection only. No GN generation, Java compilation, C++ compilation, APK packaging, emulator/device test, or YouTube TV playback regression test has been run. The branch therefore remains **not build-verified**. A full file-by-file provenance audit is also not complete: the root recursive tree response is truncated and the third-party tree contains hundreds of packages.
+
+The retained Mojo compatibility interface must not be deleted or renamed until the actual web-client consumer and all generated bindings are traced. The app must not be represented as fully TizenTube-independent, fully MyTube-owned, or release-ready until the outstanding build, runtime, licence and release-pipeline gates pass.
