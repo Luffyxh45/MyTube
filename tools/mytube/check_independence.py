@@ -8,6 +8,7 @@ or TV-device regression tests.
 from pathlib import Path
 import subprocess
 import sys
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -74,6 +75,15 @@ require('android:banner="@drawable/mytube_banner"' in manifest,
 require('"java/res/drawable/mytube_icon.xml"' in shell_gn
         and '"java/res/drawable/mytube_banner.xml"' in shell_gn,
         "MyTube vector branding resources are packaged")
+require('manifest_package=com.luffy.mytube' in read("cobalt/android/BUILD.gn"),
+        "Android package identity is com.luffy.mytube")
+require('MyTube{% endblock %}' in manifest,
+        "Android application label is MyTube")
+require('https://www.youtube.com/tv' in manifest,
+        "YouTube TV start URL is preserved")
+for resource in ("mytube_icon.xml", "mytube_banner.xml"):
+    root = ET.parse(ROOT / f"cobalt/shell/android/java/res/drawable/{resource}").getroot()
+    require(root.tag == "vector", f"{resource} is valid vector XML")
 for density in ("hdpi", "mdpi", "xhdpi", "xxhdpi", "xxxhdpi"):
     require(not (ROOT / f"cobalt/shell/android/java/res/drawable-{density}/app_banner.png").exists(),
             f"obsolete TizenTube banner removed ({density})")
