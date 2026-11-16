@@ -30,9 +30,9 @@ A fork does not transfer copyright. Existing Chromium, Cobalt, Starboard, TizenT
 - `README.md` identifies MyTube as a Cobalt-based streaming app and credits the project maintainer as MyTube by Luffy. It also acknowledges third-party licences.
 - `cobalt/android/BUILD.gn` sets `com.luffy.mytube` for the CoAT development-shell manifest generation. This is **not proof** that the production Kimono APK uses that package ID.
 - `cobalt/shell/android/shell_apk/AndroidManifest.xml.jinja2` labels the CoAT development shell as MyTube. Its own comments explicitly say this manifest does not affect the production Kimono app. The YouTube TV URL and splash-screen metadata remain unchanged.
-- The TizenTube-derived module under `cobalt/browser/h5vcc_tizentube/` is still part of the Cobalt browser build. Its inspected C++ and Mojo files carry **Copyright 2026 Reis Can (reisxd)** and Apache-2.0 headers. `cobalt/browser/BUILD.gn` depends on the module, and `cobalt/browser/cobalt_browser_interface_binders.cc` registers its Mojo interface. It currently implements app installation from URL, version/device information, frame-rate setting and user-agent override. This is a local source dependency in the repository, not evidence of a runtime call to the TizenTube owner's server; however, its source provenance and required attribution remain.
+- The unused TizenTube-derived native implementation target and C++ implementation files have now been removed from `mytube-branding`. The public Mojo contract remains under `cobalt/browser/h5vcc_tizentube/public/mojom/` because the current binder still exposes that interface to the existing web client. Its original **Copyright 2026 Reis Can (reisxd)** and Apache-2.0 header is retained. The binder now connects that compatibility interface to `mytube::PlatformApiImpl`; the browser GN target no longer depends on the old implementation target.
 - The inspected `.github/OWNERS` file lists Chromium reviewers. It is a code-review ownership file, not GitHub collaborator permissions and does not itself grant repository write/admin access.
-- The branch comparison currently shows `mytube-branding` is 21 commits ahead of `main` and 0 behind. This branch has not been merged into `main`.
+- The latest branch comparison at this audit reports `mytube-branding` is 63 commits ahead of `main` and 0 behind. This branch has not been merged into `main`.
 
 ## Safe rules
 
@@ -94,3 +94,16 @@ MyTube is **operationally independent of TizenTube** when its application code, 
 MyTube is **runtime-independent** only when it no longer relies on the inherited Cobalt/Chromium runtime and a replacement engine is implemented and verified.
 
 A complete file-by-file licence audit, verified production package identity, generated third-party notices and a successful supported-platform build are release gates. This roadmap is an engineering plan, not legal advice or a licence certification.
+
+
+## Implementation update — 2026-11-16
+
+The legacy native implementation cleanup and follow-up Android source corrections have been committed to `mytube-branding`:
+
+- Removed the unused legacy `h5vcc_tizentube` C++ implementation target and its `.cc/.h` files. The public Mojom contract remains as a compatibility boundary.
+- Added the missing `MyTubePlatformApi.java` entry to the `cobalt_main_java` GN source list. This was a real build-wiring omission found during static review.
+- Corrected the misspelled `DisplayManager.MATCH_CONTENT_FRAMERATE_SEAMLESS_ONLY` constant.
+- Removed the helper's compile-time dependency on `CobaltActivity` and apply frame-rate changes to the shared active `VideoSurfaceView` surface instead, so the helper does not assume the non-Starboard activity source set is compiled.
+- Verified that the shared shell Android resources provide the FileProvider XML path used by the installer and that the AndroidX Core dependency is present in the Java target.
+
+**Still unverified:** the full Android/Cobalt target has not been generated or compiled, and no APK or TV-device test has been run. These source checks are not a substitute for CI/build/runtime evidence. The Mojo interface cannot be renamed safely until the external YouTube TV web client contract is traced. The complete third-party inventory and release signing pipeline remain open.
