@@ -221,6 +221,17 @@ final class MyTubePlatformApi {
       return;
     }
 
+    // Resolve the active video surface first. A zero frame rate clears the
+    // previous preference and must work even when content-frame matching is disabled.
+    Surface videoSurface = VideoSurfaceView.getCurrentSurface();
+    if (videoSurface == null) {
+      return;
+    }
+    if (frameRate == 0f) {
+      videoSurface.setFrameRate(0f, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT);
+      return;
+    }
+
     Display display = activity.getWindowManager().getDefaultDisplay();
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
@@ -250,17 +261,8 @@ final class MyTubePlatformApi {
       }
     }
 
-    // Use the active video Surface directly so this platform helper does not
-    // depend on the non-Starboard CobaltActivity implementation.
-    Surface videoSurface = VideoSurfaceView.getCurrentSurface();
-    if (videoSurface == null) {
-      return;
-    }
-    // A zero frame rate clears the previous preference; preserve that reset path.
-    if (frameRate == 0f) {
-      videoSurface.setFrameRate(0f, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT);
-      return;
-    }
+    // Apply the selected frame rate without depending on the non-Starboard
+    // CobaltActivity implementation.
     if (Build.VERSION.SDK_INT == 30) {
       videoSurface.setFrameRate(
           frameRate, Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE);
