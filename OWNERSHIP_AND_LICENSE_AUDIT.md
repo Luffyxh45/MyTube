@@ -436,3 +436,30 @@ The current repository root `LICENSE` is the Chromium Authors' BSD-style redistr
 No playback, SponsorBlock, ad-filtering, DeArrow, YouTube TV UI, or media-engine source files were changed in this step. Do not delete or rename the legacy H5VCC interface merely to remove the string `tizentube`: the current MyTube C++ adapter still implements that interface, and its web-side caller contract has not yet been proven replaceable. The next implementation step must trace the caller and add compatibility tests before migrating the Mojo interface.
 
 **Build/runtime status remains NOT VERIFIED.** No GN generation, C++/Java compilation, APK packaging, TV playback session, quality-selection test, SponsorBlock test, or ad-filter regression test was run in this review.
+
+## MyTube platform-service isolation — 2026-11-16
+
+**Branch:** `mytube-branding`  
+**Implementation commits:** `525f6e9`, `a7b7a6f`, `c92f563`, `d2e8fa2`
+
+A MyTube-owned platform service layer has been added:
+
+- `cobalt/browser/mytube_platform_api/mytube_platform_api_service.h`
+- `cobalt/browser/mytube_platform_api/mytube_platform_api_service.cc`
+
+The service layer owns the platform operations for APK installation requests, version, architecture, device brand/model, frame-rate requests, and user-agent override. It contains no Mojo types and no TizenTube namespace or header dependency. The existing `PlatformApiImpl` is now a thin compatibility adapter: it continues implementing the legacy H5VCC Mojo contract but delegates each operation to `PlatformApiService`.
+
+The MyTube GN target includes the new service files. This separates MyTube's internal implementation from the inherited web-facing compatibility protocol without changing the protocol expected by the existing YouTube TV application.
+
+### Compatibility and licence boundary
+
+- The legacy Mojom interface and its Apache-2.0 copyright/attribution header remain unchanged so the current web application contract is preserved.
+- The Cobalt browser binder still registers that legacy interface and points it to the MyTube adapter.
+- No playback, media pipeline, stream selection, quality selection, SponsorBlock, ad-skipping, or YouTube TV UI files were changed in this step.
+- The MyTube service files are newly authored project code; the adapter remains a derivative integration within the larger Apache-2.0 Cobalt project and retains applicable upstream notices.
+
+### Verification status
+
+Source inspection confirms the service header has no Mojo/TizenTube include, the service implementation delegates Android operations through the existing Starboard bridge, and the adapter delegates to the new service. The GN target lists both new files.
+
+**Not verified:** GN generation, C++ compilation, Android Java compilation, APK packaging, or runtime behavior. Do not remove the legacy Mojom contract until a compatible web-side interface migration is separately proven. No claim is made that the app has built successfully.
