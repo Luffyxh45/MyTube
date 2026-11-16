@@ -1,56 +1,37 @@
-# 💠 TizenTube Cobalt
+# MyTube
 
-<p align="center">
-    <img width="600px" src=".github/assets/TizenTube Cobalt Banner.png">
-    <br>
-</p>
+**MyTube by Luffy** is an Android TV-focused streaming app built on the Cobalt runtime. The project aims to retain the familiar TV viewing experience while presenting it under MyTube branding.
 
-**TizenTube Cobalt** is an app based on [Cobalt](https://cobalt.dev) that enhances your favourite streaming website viewing experience by removing ads, adding [SponsorBlock](https://sponsor.ajay.app/) support, and providing useful features like video speed control.
+## Features
 
-<details>
-<summary><strong>What is Cobalt?</strong></summary>
+- **TV-friendly interface:** A viewing experience designed for television devices and remote navigation.
+- **Ad blocking:** Reduce supported advertising interruptions.
+- **SponsorBlock:** Skip supported sponsored segments.
+- **Playback controls:** Retain supported playback and video quality controls.
+- **Video speed control:** Adjust playback speed where supported.
+- **DeArrow:** Replace misleading titles and thumbnails where supported.
 
-Cobalt is a lightweight, cross-platform application container and runtime for HTML5-based apps, originally developed by Google for embedded and resource-constrained devices (like smart TVs, set-top boxes, and game consoles). It implements a subset of the W3C HTML5 standard and runs web apps with high performance on a wide range of hardware.
+## Android TV builds
 
-</details>
+MyTube's build workflow targets both Android ARM architectures:
 
-## ✨ Features
+- **32-bit ARM:** `armeabi-v7a`
+- **64-bit ARM:** `arm64-v8a`
 
-- 🛑 **Ad Blocker**: Enjoy your favourite streaming website without interruptions from ads.
-- ❗ **SponsorBlock Support**: Automatically skip sponsored segments in videos.
-- ⏭️ **Video Speed Control**: Adjust playback speed to your preference.
-- 🔺 **[DeArrow](https://dearrow.ajay.app/) Support**: Remove clickbait and misleading video titles.
-- ➕ **More to come!** Request features via [issues](https://github.com/reisxd/TizenTube/issues/new).
+Open the [MyTube Android APK workflow](https://github.com/Luffyxh45/MyTube/actions/workflows/mytube-android-apk.yml) to view build runs. After a run succeeds, download the matching APK from its **Artifacts** section. Builds are not considered available until the workflow has completed successfully.
 
-## ⬇️ Download
+## Installation
 
-Get the latest release for your platform:
+1. Open the [MyTube Android APK workflow](https://github.com/Luffyxh45/MyTube/actions/workflows/mytube-android-apk.yml).
+2. Select a successful run.
+3. Download the APK artifact for your device architecture.
+4. Extract the APK and sideload it onto your Android TV device.
 
-<p align="left">
-    <a href="https://github.com/reisxd/TizenTubeCobalt/releases/latest">
-        <picture>
-            <img width="250px"
-                src=".github/assets/TizenTube Download Latest Release Button.png" />
-        </picture>
-    </a>
-</p>
+## Support
 
+- [Report issues or request features](https://github.com/Luffyxh45/MyTube/issues)
+- [View source code](https://github.com/Luffyxh45/MyTube)
 
-**AFTVNews code:** `6366500`
-> 💡 For a better experience, preferably use TizenTube Cobalt on a [**Google TV certified device.**](https://www.androidtv-guide.com/)
+## Project identity and licensing
 
-## ❓ How to Install
-
-1. Download the latest release from the link above.
-2. Sideload or install the app on your device (using a file manager, ADB, or platform-specific method).
-3. Open the app and enjoy an enhanced streaming experience!
-
-## 🌐 Community & Support
-
-| Links |
-| ------------- |
-| [r/TizenTube Subreddit](https://www.reddit.com/r/TizenTube/)  |
-| [Discord Server](https://discord.gg/m2P7v8Y2qR)  | 
-| [Telegram](https://t.me/tizentubeofficial)  |
-| [Matrix Space](https://matrix.to/#/!BLE5ubNYktI30e8K0j:matrix.6513006.xyz)  |
-| [Report Issues / Request Features](https://github.com/reisxd/tizenTubeCobalt/issues)  |
+MyTube is the project name; **MyTube by Luffy** is the project branding. This repository is based on the Cobalt project and may include other third-party open-source components. MyTube branding does not change the ownership or licensing of upstream code. Original copyright notices, licence terms, and required attributions must remain intact. Refer to the repository's licence files and third-party notices for details.
