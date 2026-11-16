@@ -1,0 +1,19 @@
+# Copyright 2026 MyTube by Luffy.
+# Licensed under the Apache License, Version 2.0.
+# See starboard/LICENSE for the license text.
+
+source_set("mytube_platform_api") {
+  sources = [
+    "mytube_platform_api_impl.cc",
+    "mytube_platform_api_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//cobalt/browser:global_features",
+    "//cobalt/browser/h5vcc_tizentube/public/mojom",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//starboard:starboard_group",
+  ]
+}
