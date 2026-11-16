@@ -49,7 +49,7 @@ final class MyTubePlatformApi {
 
   private MyTubePlatformApi() {}
 
-  static boolean installAppFromURL(Context context, Activity activity, String source) {
+  static boolean installAppFromURL(Context context, String source) {
     if (context == null || !isHttpsUrl(source)) {
       return false;
     }
@@ -133,7 +133,7 @@ final class MyTubePlatformApi {
           throw new IOException("Download server returned HTTP " + status);
         }
 
-        long declaredLength = connection.getContentLengthLong();
+        int declaredLength = connection.getContentLength();
         if (declaredLength > MAX_APK_BYTES) {
           throw new IOException("APK exceeds the 100 MiB download limit");
         }
@@ -242,8 +242,10 @@ final class MyTubePlatformApi {
         return;
       }
       if (preference == DisplayManager.MATCH_CONTENT_FRAMERATE_SEAMLESSS_ONLY) {
-        strategy = seamless ? Surface.CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS
-            : Surface.CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS;
+        if (!seamless) {
+          return;
+        }
+        strategy = Surface.CHANGE_FRAME_RATE_ONLY_IF_SEAMLESS;
       }
     }
 
