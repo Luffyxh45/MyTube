@@ -47,7 +47,6 @@ gclient_gn_args = [
   'checkout_glic_e2e_tests',
   'checkout_ios_webkit',
   'checkout_mutter',
-  'checkout_nacl',
   'checkout_openxr',
   'checkout_src_internal',
   'checkout_src_internal_infra',
@@ -123,9 +122,6 @@ vars = {
   # interactive_ui_tests on the linux/wayland compositor.
   'checkout_mutter': False,
 
-  # Check out and download nacl for ChromeOS only.
-  # This can be disabled e.g. with custom_vars.
-  'checkout_nacl': 'checkout_chromeos',
 
   # By default, do not check out src-internal. This can be overridden e.g. with
   # custom_vars.
@@ -302,9 +298,7 @@ vars = {
   'skia_git': 'https://skia.googlesource.com',
   'swiftshader_git': 'https://swiftshader.googlesource.com',
   'webrtc_git': 'https://webrtc.googlesource.com',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
-  # and whatever else without interference from each other.
   'src_internal_revision': 'c07d7a57873da95a181eaae70ce34d6ad5ac7952',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
@@ -355,9 +349,7 @@ vars = {
   # and whatever else without interference from each other.
   'breakpad_revision': '2625edb085169e92cf036c236ac79ab594a7b1cc',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling NaCl
   # and whatever else without interference from each other.
-  'nacl_revision': 'e3fce84f253bc1e77bb239185c0fbff23dc8e3ee',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling freetype
   # and whatever else without interference from each other.
@@ -1518,11 +1510,6 @@ deps = {
   'src/chrome/test/data/xr/webvr_info':
     Var('chromium_git') + '/external/github.com/toji/webvr.info.git' + '@' + 'c58ae99b9ff9e2aa4c524633519570bf33536248',
 
-  'src/clank': {
-    'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'c429267f3539e1d40d05527bacde592f76b64e9d',
-    'condition': 'checkout_android and checkout_src_internal',
-  },
 
   'src/cobalt/internal': {
     'url': Var('cobalt_internal_git') + '/cobalt/internal.git' + '@' + 'b4b1c4315e80d81eb977b9ef72d0386e3899c5f9',
@@ -1612,10 +1599,6 @@ deps = {
   'src/media/cdm/api':
     Var('chromium_git') + '/chromium/cdm.git' + '@' + '852a81f0ae3ab350041d2e44d207a42fb0436ae1',
 
-  'src/native_client': {
-      'url': Var('chromium_git') + '/native_client/src/native_client.git' + '@' + Var('nacl_revision'),
-      'condition': 'checkout_nacl',
-  },
 
 # Cobalt: imported
 #  'src/net/third_party/quiche/src':
@@ -3046,13 +3029,6 @@ deps = {
 #  'src/v8':
 #    Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
-# See checkout_src_internal_infra declaration.
-# LINT.IfChange
-  'src/internal': {
-    'url': Var('chrome_git') + '/chrome/src-internal.git' + '@' + Var('src_internal_revision'),
-    'condition': 'checkout_src_internal or checkout_src_internal_infra',
-  },
-# LINT.ThenChange(/components/cronet/gn2bp/copy.bara.sky)
 
   'src/ash/ambient/resources': {
     'packages': [
@@ -4742,11 +4718,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/ios_internal':  {
-      'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '341cddc57b2d1176ab8610e574fd8d6c04e28175',
-      'condition': 'checkout_ios and checkout_src_internal',
-  },
 
   'src/remoting/host/installer/linux/internal': {
       'url': Var('chrome_git') + '/chrome/remoting/host/installer/linux/internal.git' + '@' +
@@ -4772,11 +4743,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/signing_keys': {
-      'url': Var('chrome_git') + '/clank/apptestkey.git' + '@' +
-        '5138e684915721cbccbb487ec0764ed05650fcd0',
-      'condition': 'checkout_android and checkout_google_internal and checkout_src_internal',
-  },
 
   'src/skia/tools/clusterfuzz-data':{
       'url': Var('chrome_git') + '/chrome/tools/clusterfuzz-data.git' + '@' +
@@ -5030,7 +4996,6 @@ include_rules = [
 
 # checkdeps.py shouldn't check include paths for files in these dirs:
 skip_child_includes = [
-  'native_client_sdk',
   'out',
   'skia',
   'testing',
@@ -5061,24 +5026,6 @@ hooks = [
     'action': [
         'python3',
         'src/build/landmines.py',
-    ],
-  },
-  {
-    # This clobbers when necessary (based on the internal ios version of
-    # get_landmines.py). This should run as early as possible so that
-    # other things that get/generate into the output directory will not
-    # subsequently be clobbered. This script is only run# for iOS build
-    # with src_internal.
-    'name': 'landmines_ios_internal',
-    'pattern': '.',
-    'condition': 'checkout_ios and checkout_src_internal',
-    'action': [
-        'python3',
-        'src/build/landmines.py',
-        '--landmine-scripts',
-        'src/ios_internal/build/get_landmines.py',
-        '--landmines-path',
-        'src/ios_internal/.landmines',
     ],
   },
   {
@@ -5125,20 +5072,6 @@ hooks = [
         'src/third_party/catapult',
         'src/third_party/mako', # Some failures triggered by crrev.com/c/3686969
         'src/tools',
-    ],
-  },
-  {
-    # This downloads binaries for Native Client's newlib toolchain.
-    # Done in lieu of building the toolchain from scratch as it can take
-    # anywhere from 30 minutes to 4 hours depending on platform to build.
-    'name': 'nacltools',
-    'pattern': '.',
-    'condition': 'checkout_nacl',
-    'action': [
-        'python3',
-        'src/build/download_nacl_toolchains.py',
-        '--mode', 'nacl_core_sdk',
-        'sync', '--extract',
     ],
   },
   {
@@ -5784,9 +5717,5 @@ recursedeps = [
   'src/third_party/instrumented_libs',
   'src/third_party/openscreen/src',
   'src/third_party/devtools-frontend/src',
-  # clank has its own DEPS file, does not need to be in trybot_analyze_config
-  # since the roller does not run tests.
-  'src/clank',
   'src/components/optimization_guide/internal',
-  'src/ios_internal',
 ]
