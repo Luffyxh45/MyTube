@@ -48,6 +48,16 @@ jobs:
           echo "${GITHUB_WORKSPACE}/cobalt/depot_tools" >> "${GITHUB_PATH}"
           echo "DEPOT_TOOLS_DIR=${GITHUB_WORKSPACE}/cobalt/depot_tools" >> "${GITHUB_ENV}"
 
+      - name: Bootstrap depot_tools Python
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -x "${DEPOT_TOOLS_DIR}/ensure_bootstrap"
+          "${DEPOT_TOOLS_DIR}/ensure_bootstrap"
+          test -s "${DEPOT_TOOLS_DIR}/python3_bin_reldir.txt"
+          echo "depot_tools Python bootstrap completed:"
+          cat "${DEPOT_TOOLS_DIR}/python3_bin_reldir.txt"
+
       - name: Configure gclient and sync dependencies
         working-directory: cobalt
         shell: bash
