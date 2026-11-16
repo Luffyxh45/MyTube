@@ -217,7 +217,7 @@ final class MyTubePlatformApi {
 
   static void setFrameRate(Context context, Activity activity, float frameRate) {
     if (Build.VERSION.SDK_INT < 30 || activity == null
-        || Float.isNaN(frameRate) || Float.isInfinite(frameRate) || frameRate <= 0) {
+        || Float.isNaN(frameRate) || Float.isInfinite(frameRate) || frameRate < 0) {
       return;
     }
 
@@ -254,6 +254,11 @@ final class MyTubePlatformApi {
     // depend on the non-Starboard CobaltActivity implementation.
     Surface videoSurface = VideoSurfaceView.getCurrentSurface();
     if (videoSurface == null) {
+      return;
+    }
+    // A zero frame rate clears the previous preference; preserve that reset path.
+    if (frameRate == 0f) {
+      videoSurface.setFrameRate(0f, Surface.FRAME_RATE_COMPATIBILITY_DEFAULT);
       return;
     }
     if (Build.VERSION.SDK_INT == 30) {
