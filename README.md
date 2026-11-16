@@ -1,56 +1,30 @@
-# 💠 TizenTube Cobalt
+# MyTube
 
-<p align="center">
-    <img width="600px" src=".github/assets/TizenTube Cobalt Banner.png">
-    <br>
-</p>
+MyTube is a streaming app built on the Cobalt runtime. It enhances the viewing experience with ad blocking, SponsorBlock support, video speed controls, and DeArrow integration.
 
-**TizenTube Cobalt** is an app based on [Cobalt](https://cobalt.dev) that enhances your favourite streaming website viewing experience by removing ads, adding [SponsorBlock](https://sponsor.ajay.app/) support, and providing useful features like video speed control.
+## Features
 
-<details>
-<summary><strong>What is Cobalt?</strong></summary>
+- **Ad blocking:** Watch supported video content with fewer interruptions.
+- **SponsorBlock:** Automatically skip sponsored segments.
+- **Video speed control:** Adjust playback speed.
+- **DeArrow:** Help replace clickbait titles and thumbnails.
+- **Cobalt runtime:** Built on the Cobalt platform for supported devices.
 
-Cobalt is a lightweight, cross-platform application container and runtime for HTML5-based apps, originally developed by Google for embedded and resource-constrained devices (like smart TVs, set-top boxes, and game consoles). It implements a subset of the W3C HTML5 standard and runs web apps with high performance on a wide range of hardware.
+## Download
 
-</details>
+Check the [latest MyTube releases](https://github.com/Luffyxh45/MyTube/releases) for available builds and installation files.
 
-## ✨ Features
+## Installation
 
-- 🛑 **Ad Blocker**: Enjoy your favourite streaming website without interruptions from ads.
-- ❗ **SponsorBlock Support**: Automatically skip sponsored segments in videos.
-- ⏭️ **Video Speed Control**: Adjust playback speed to your preference.
-- 🔺 **[DeArrow](https://dearrow.ajay.app/) Support**: Remove clickbait and misleading video titles.
-- ➕ **More to come!** Request features via [issues](https://github.com/reisxd/TizenTube/issues/new).
+1. Open the [Releases](https://github.com/Luffyxh45/MyTube/releases) page.
+2. Download the build for your supported device.
+3. Install or sideload it using the method supported by your device.
+4. Launch MyTube.
 
-## ⬇️ Download
+## Support
 
-Get the latest release for your platform:
+- [Report an issue or request a feature](https://github.com/Luffyxh45/MyTube/issues)
 
-<p align="left">
-    <a href="https://github.com/reisxd/TizenTubeCobalt/releases/latest">
-        <picture>
-            <img width="250px"
-                src=".github/assets/TizenTube Download Latest Release Button.png" />
-        </picture>
-    </a>
-</p>
+## Credits and licensing
 
-
-**AFTVNews code:** `6366500`
-> 💡 For a better experience, preferably use TizenTube Cobalt on a [**Google TV certified device.**](https://www.androidtv-guide.com/)
-
-## ❓ How to Install
-
-1. Download the latest release from the link above.
-2. Sideload or install the app on your device (using a file manager, ADB, or platform-specific method).
-3. Open the app and enjoy an enhanced streaming experience!
-
-## 🌐 Community & Support
-
-| Links |
-| ------------- |
-| [r/TizenTube Subreddit](https://www.reddit.com/r/TizenTube/)  |
-| [Discord Server](https://discord.gg/m2P7v8Y2qR)  | 
-| [Telegram](https://t.me/tizentubeofficial)  |
-| [Matrix Space](https://matrix.to/#/!BLE5ubNYktI30e8K0j:matrix.6513006.xyz)  |
-| [Report Issues / Request Features](https://github.com/reisxd/tizenTubeCobalt/issues)  |
+MyTube is based on the Cobalt project and incorporates other open-source components. Their original copyright notices, licences, and required attributions remain applicable. See the repository's licence and third-party notices for details.
