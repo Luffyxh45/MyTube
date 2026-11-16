@@ -110,7 +110,7 @@ Trace the complete H5VCC contract from the YouTube TV web application through Mo
 
 ## Implementation log — MyTube backend extraction
 
-**Branch revision after this step:** `e8354df0ebbe7fd2eb05b8f44ef339373ea816e6`
+**Branch revision after this step:** `2d400d6c16e64de042363f0c8a81469eb33f1769`
 
 A first MyTube-owned replacement layer has now been added without deleting the legacy compatibility contract:
 
@@ -124,3 +124,6 @@ A first MyTube-owned replacement layer has now been added without deleting the l
 The APK installer implementation now accepts HTTPS URLs only, validates HTTPS redirects, applies connection/read timeouts and a 100 MiB size limit, checks that the downloaded ZIP contains `AndroidManifest.xml`, and routes installation through Android's user-confirmed package installer. It also reports failures to the Android log instead of silently swallowing them.
 
 **Not yet verified:** no GN generation, C++/Java build, APK packaging, device runtime test, or automated regression test has been run. The old Mojo interface and old source files must not be removed until the supported target builds and the YouTube TV consumer contract is verified.
+
+
+The follow-up Java cleanup removed imports made unused by the extraction. Static source checks confirm the main browser target and binder reference the MyTube implementation, while the legacy Mojo type remains intentionally in place. No compile or runtime test has yet been run.
