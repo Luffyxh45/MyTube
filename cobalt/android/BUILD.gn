@@ -350,7 +350,7 @@ shared_library_with_jni("libchrobalt") {
 }
 
 android_apk("cobalt_apk") {
-  apk_name = "Cobalt"
+  apk_name = "MyTube"
   android_manifest = cobalt_manifest
   android_manifest_dep = ":cobalt_manifest"
   deps = [
