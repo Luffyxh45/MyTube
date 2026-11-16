@@ -221,3 +221,9 @@ On 2026-11-16, the repository permission endpoint returned:
 | `tluk` | `read` |
 
 These are the known upstream identities found in the inherited funding/reviewer metadata. This is only a three-account spot-check; it is not a complete collaborators/team membership export and cannot certify that no other account has write or admin access.
+
+
+### Additional metadata and workflow cleanup — 2026-11-16
+
+- `README.md` now says **Project maintainer: MyTube by Luffy** rather than using an unqualified “Author” label, avoiding an implication that the entire inherited engine was written by MyTube.
+- `.github/workflows/autoroll_main.yaml` had an empty `schedule:` block (the cron line was already commented out). That block has been removed; the workflow is now explicitly `workflow_dispatch` only. The recent history showed 17 failed push-event runs for this workflow, and the Actions jobs endpoint returned zero jobs for the latest inspected run. After this trigger cleanup, the latest Actions-run query showed no new push-triggered run for the cleanup commit. This is not a full workflow test; the manual autoroll was not dispatched because it uses the `CHERRY_PICK_TOKEN` secret and can push branches / create pull requests.
